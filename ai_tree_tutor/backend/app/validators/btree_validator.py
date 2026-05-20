@@ -9,20 +9,22 @@ from typing import Any, Dict, List, Optional
 
 
 # ============================================================ B-Tree
-def validate_btree(tree_data: Optional[Dict[str, Any]], t: int = 3) -> Dict[str, Any]:
+def validate_btree(tree_data: Optional[Dict[str, Any]], order: int = 3) -> Dict[str, Any]:
     """Validate B-Tree invariants."""
     violations: List[Dict[str, Any]] = []
     if tree_data is None:
         return {"valid": True, "violations": []}
-    _validate_btree_node(tree_data, t, violations, is_root=True)
+    _validate_btree_node(tree_data, violations, is_root=True, order=order)
     return {"valid": len(violations) == 0, "violations": violations}
 
 
-def _validate_btree_node(node: Dict, t: int, violations: List[Dict], is_root: bool = False) -> int:
+def _validate_btree_node(node: Dict[str, Any], violations: List[Dict], is_root: bool, order: int) -> int:
     keys = node.get("keys", [])
     children = node.get("children", [])
-    leaf = node.get("leaf", True)
-    max_keys = 2 * t - 1
+    is_leaf = node.get("leaf", True)
+
+    max_keys = order
+    min_keys = order // 2 if not is_root else 1
 
     if len(keys) > max_keys:
         violations.append({
@@ -38,7 +40,7 @@ def _validate_btree_node(node: Dict, t: int, violations: List[Dict], is_root: bo
             })
             break
 
-    if not leaf and len(children) != len(keys) + 1:
+    if not is_leaf and len(children) != len(keys) + 1:
         violations.append({
             "type": "wrong_child_count",
             "message": f"Node with {len(keys)} keys has {len(children)} children (expected {len(keys) + 1}).",
@@ -46,7 +48,7 @@ def _validate_btree_node(node: Dict, t: int, violations: List[Dict], is_root: bo
 
     depths = []
     for child in children:
-        d = _validate_btree_node(child, t, violations)
+        d = _validate_btree_node(child, violations, False, order)
         depths.append(d)
     if depths and len(set(depths)) > 1:
         violations.append({
@@ -70,7 +72,7 @@ def _validate_bplus_node(node: Dict, order: int, violations: List[Dict], is_root
     keys = node.get("keys", [])
     children = node.get("children", [])
     leaf = node.get("leaf", True)
-    max_keys = order - 1
+    max_keys = order
 
     if len(keys) > max_keys:
         violations.append({

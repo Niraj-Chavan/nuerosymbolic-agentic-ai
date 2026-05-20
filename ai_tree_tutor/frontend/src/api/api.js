@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: '/api',
-  timeout: 30000,
+  timeout: 120000, // Increased to 120 seconds to allow for AI generation
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -63,7 +63,7 @@ export async function getWeakConcepts(threshold = 0.4) {
 
 /** Get supported tree types. */
 export async function getTrees() {
-  const res = await api.get('/trees');
+  const res = await api.get('/tree');
   return res.data;
 }
 

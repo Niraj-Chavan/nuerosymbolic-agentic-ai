@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ControlPanel from './components/ControlPanel.jsx';
 import TreeVisualizer from './components/TreeVisualizer.jsx';
 import ExplanationPanel from './components/ExplanationPanel.jsx';
@@ -44,6 +44,9 @@ export default function App() {
   const setRangeLow = useTreeStore((s) => s.setRangeLow);
   const setRangeHigh = useTreeStore((s) => s.setRangeHigh);
   const performRangeQuery = useTreeStore((s) => s.performRangeQuery);
+  const heapType = useTreeStore((s) => s.heapType);
+  const setHeapType = useTreeStore((s) => s.setHeapType);
+  const searchFound = useTreeStore((s) => s.searchFound);
 
   const {
     steps,
@@ -62,6 +65,8 @@ export default function App() {
 
   const conceptGraph = useConceptStore((s) => s.conceptGraph);
   const progress = useConceptStore((s) => s.progress);
+  const fetchGraph = useConceptStore((s) => s.fetchGraph);
+  const fetchProgress = useConceptStore((s) => s.fetchProgress);
 
   const fetchedRef = useRef(false);
   useEffect(() => {
@@ -152,6 +157,11 @@ export default function App() {
           operationLog={operationLog}
           treeOrder={treeOrder}
           onOrderChange={setTreeOrder}
+          heapType={heapType}
+          onHeapTypeChange={setHeapType}
+          lastOperation={lastOperation}
+          lastOperationKey={lastOperationKey}
+          searchFound={searchFound}
           rangeLow={rangeLow}
           rangeHigh={rangeHigh}
           rangeResult={rangeResult}

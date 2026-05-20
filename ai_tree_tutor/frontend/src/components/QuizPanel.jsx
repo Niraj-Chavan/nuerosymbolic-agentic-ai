@@ -45,7 +45,7 @@ export default function QuizPanel({ onConceptUpdate }) {
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
     try {
       const quiz = await generateQuiz(
         quizTopic || null,
@@ -136,13 +136,15 @@ export default function QuizPanel({ onConceptUpdate }) {
               onChange={(e) => setQuizTopic(e.target.value)}
               style={{
                 width: '100%', padding: '10px 14px',
-                background: 'var(--bg-glass)', border: '1px solid var(--border-glass)',
+                background: '#111827', border: '1px solid var(--border-glass)',
                 borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)',
                 fontFamily: 'var(--font-sans)', fontSize: '0.9rem', outline: 'none',
               }}
             >
               {TREE_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option key={opt.value} value={opt.value} style={{ background: '#111827', color: 'var(--text-primary)' }}>
+                  {opt.label}
+                </option>
               ))}
             </select>
           </div>
@@ -168,15 +170,15 @@ export default function QuizPanel({ onConceptUpdate }) {
                 onChange={(e) => setDifficulty(e.target.value)}
                 style={{
                   width: '100%', padding: '10px 14px',
-                  background: 'var(--bg-glass)', border: '1px solid var(--border-glass)',
+                  background: '#111827', border: '1px solid var(--border-glass)',
                   borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)',
                   fontFamily: 'var(--font-sans)', fontSize: '0.9rem', outline: 'none',
                 }}
               >
-                <option value="mixed">Mixed</option>
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
+                <option value="mixed" style={{ background: '#111827', color: 'var(--text-primary)' }}>Mixed</option>
+                <option value="easy" style={{ background: '#111827', color: 'var(--text-primary)' }}>Easy</option>
+                <option value="medium" style={{ background: '#111827', color: 'var(--text-primary)' }}>Medium</option>
+                <option value="hard" style={{ background: '#111827', color: 'var(--text-primary)' }}>Hard</option>
               </select>
             </div>
           </div>
@@ -231,14 +233,14 @@ export default function QuizPanel({ onConceptUpdate }) {
         </div>
 
         {/* Difficulty badge */}
-        {q.difficulty && (
+        {q.difficulty_label && (
           <span style={{
             fontSize: '0.7rem', fontWeight: 600, padding: '3px 8px',
             borderRadius: 12, marginBottom: 12, display: 'inline-block',
-            background: q.difficulty === 'easy' ? 'rgba(16,185,129,0.15)' : q.difficulty === 'hard' ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)',
-            color: q.difficulty === 'easy' ? 'var(--accent-success)' : q.difficulty === 'hard' ? 'var(--accent-danger)' : 'var(--accent-warning)',
+            background: q.difficulty_label === 'easy' ? 'rgba(16,185,129,0.15)' : q.difficulty_label === 'hard' ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)',
+            color: q.difficulty_label === 'easy' ? 'var(--accent-success)' : q.difficulty_label === 'hard' ? 'var(--accent-danger)' : 'var(--accent-warning)',
           }}>
-            {q.difficulty.toUpperCase()}
+            {q.difficulty_label.toUpperCase()}
           </span>
         )}
 
@@ -249,14 +251,15 @@ export default function QuizPanel({ onConceptUpdate }) {
 
         {/* Options */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {(q.options || []).map((option, idx) => (
+          {(q.shuffled_options || q.options || []).map((option, idx) => (
             <button
               key={idx}
               id={`quiz-option-${idx}`}
               onClick={() => handleAnswer(idx)}
+              className={`quiz-option-btn ${answers[currentQ] === idx ? 'selected' : ''}`}
               style={{
                 padding: '12px 16px',
-                background: answers[currentQ] === idx ? 'rgba(99,102,241,0.2)' : 'var(--bg-glass)',
+                background: answers[currentQ] === idx ? 'rgba(99,102,241,0.25)' : 'var(--bg-glass)',
                 border: answers[currentQ] === idx ? '2px solid var(--accent-primary)' : '1px solid var(--border-glass)',
                 borderRadius: 'var(--radius-sm)',
                 color: answers[currentQ] === idx ? 'var(--text-primary)' : 'var(--text-secondary)',

@@ -39,6 +39,9 @@ class BPlusTree:
     # ---------------------------------------------------------------- insert
     def insert(self, key: int) -> Dict[str, Any]:
         self.operation_log = []
+        if self.search(key).get("found", False):
+            self.operation_log.append({"action": "error", "message": f"Key {key} already exists"})
+            return {"operation": "insert", "key": key, "tree": self.export(), "log": self.operation_log}
         result = self._insert(self.root, key)
         if result is not None:
             new_root = BPlusInternal()
@@ -52,7 +55,7 @@ class BPlusTree:
     def _insert(self, node, key: int):
         if self._is_leaf(node):
             self._insert_into_leaf(node, key)
-            if len(node.keys) >= self.order:
+            if len(node.keys) > self.order:
                 return self._split_leaf(node)
             return None
         else:
@@ -63,7 +66,7 @@ class BPlusTree:
             if result is not None:
                 node.keys.insert(i, result[0])
                 node.children.insert(i + 1, result[1])
-                if len(node.keys) >= self.order:
+                if len(node.keys) > self.order:
                     return self._split_internal(node)
             return None
 
@@ -119,7 +122,7 @@ class BPlusTree:
         if not deleted:
             return False
 
-        min_keys = (self.order - 1) // 2
+        min_keys = self.order // 2
         child = node.children[i]
         child_key_count = len(child.keys)
 
@@ -228,8 +231,8 @@ class BPlusTree:
         return {"valid": len(violations) == 0, "violations": violations, "tree": self.export()}
 
     def _validate_node(self, node, violations: List[Dict], is_root: bool = False) -> int:
-        max_keys = self.order - 1
-        min_keys = (self.order - 1) // 2 if not is_root else 1
+        max_keys = self.order
+        min_keys = self.order // 2 if not is_root else 1
 
         if not (is_root and self._is_leaf(node) and len(node.keys) == 0):
             if len(node.keys) > max_keys:

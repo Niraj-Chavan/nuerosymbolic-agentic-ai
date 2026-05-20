@@ -20,77 +20,87 @@ class BTreeNode:
 
 
 class BTree:
-    """B-Tree of given order (minimum degree t)."""
+    """B-Tree of given order."""
 
-    def __init__(self, t: int = 3):
-        self.t = t  # minimum degree
+    def __init__(self, order: int = 3):
+        self.order = order
+        self.t = order  # Keep self.t for backward compatibility / fallback
         self.root = BTreeNode(leaf=True)
         self.operation_log: List[Dict[str, Any]] = []
 
     # ---------------------------------------------------------------- insert
     def insert(self, key: int) -> Dict[str, Any]:
         self.operation_log = []
-        root = self.root
-        if len(root.keys) == 2 * self.t - 1:
+        if self.search(key).get("found", False):
+            self.operation_log.append({"action": "error", "message": f"Key {key} already exists"})
+            return {"operation": "insert", "key": key, "tree": self.export(), "log": self.operation_log}
+        
+        res = self._insert(self.root, key)
+        if res is not None:
+            promoted_key, new_node = res
             new_root = BTreeNode(leaf=False)
-            new_root.children.append(self.root)
-            self._split_child(new_root, 0)
+            new_root.keys = [promoted_key]
+            new_root.children = [self.root, new_node]
             self.root = new_root
             self.operation_log.append({"action": "root_split"})
-        self._insert_non_full(self.root, key)
+        
         self.operation_log.append({"action": "insert", "key": key})
         return {"operation": "insert", "key": key, "tree": self.export(), "log": self.operation_log}
 
-    def _split_child(self, parent: BTreeNode, i: int) -> None:
-        t = self.t
-        child = parent.children[i]
-        new_node = BTreeNode(leaf=child.leaf)
-        mid_key = child.keys[t - 1]
+    def _insert(self, node: BTreeNode, key: int) -> Optional[Tuple[int, BTreeNode]]:
+        if node.leaf:
+            i = 0
+            while i < len(node.keys) and key > node.keys[i]:
+                i += 1
+            node.keys.insert(i, key)
+            if len(node.keys) > self.order:
+                return self._split(node)
+            return None
+        else:
+            i = 0
+            while i < len(node.keys) and key > node.keys[i]:
+                i += 1
+            res = self._insert(node.children[i], key)
+            if res is not None:
+                promoted_key, new_child = res
+                node.keys.insert(i, promoted_key)
+                node.children.insert(i + 1, new_child)
+                if len(node.keys) > self.order:
+                    return self._split(node)
+            return None
 
-        parent.keys.insert(i, mid_key)
-        parent.children.insert(i + 1, new_node)
-
-        new_node.keys = child.keys[t:]
-        child.keys = child.keys[:t - 1]
-
-        if not child.leaf:
-            new_node.children = child.children[t:]
-            child.children = child.children[:t]
-
+    def _split(self, node: BTreeNode) -> Tuple[int, BTreeNode]:
+        mid = len(node.keys) // 2
+        promoted_key = node.keys[mid]
+        new_node = BTreeNode(leaf=node.leaf)
+        new_node.keys = node.keys[mid + 1:]
+        node.keys = node.keys[:mid]
+        if not node.leaf:
+            new_node.children = node.children[mid + 1:]
+            node.children = node.children[:mid + 1]
         self.operation_log.append({
             "action": "split",
-            "promoted_key": mid_key,
+            "promoted_key": promoted_key,
         })
-
-    def _insert_non_full(self, node: BTreeNode, key: int) -> None:
-        i = len(node.keys) - 1
-        if node.leaf:
-            node.keys.append(0)
-            while i >= 0 and key < node.keys[i]:
-                node.keys[i + 1] = node.keys[i]
-                i -= 1
-            node.keys[i + 1] = key
-        else:
-            while i >= 0 and key < node.keys[i]:
-                i -= 1
-            i += 1
-            if len(node.children[i].keys) == 2 * self.t - 1:
-                self._split_child(node, i)
-                if key > node.keys[i]:
-                    i += 1
-            self._insert_non_full(node.children[i], key)
+        return promoted_key, new_node
 
     # ---------------------------------------------------------------- delete
     def delete(self, key: int) -> Dict[str, Any]:
         self.operation_log = []
-        self._delete(self.root, key)
+        if not self.search(key).get("found", False):
+            self.operation_log.append({"action": "error", "message": f"Key {key} does not exist"})
+            return {"operation": "delete", "key": key, "tree": self.export(), "log": self.operation_log}
+
+        deleted = self._delete(self.root, key)
         if len(self.root.keys) == 0 and not self.root.leaf:
-            self.root = self.root.children[0]
+            if self.root.children:
+                self.root = self.root.children[0]
+            else:
+                self.root = BTreeNode(leaf=True)
         self.operation_log.append({"action": "delete", "key": key})
         return {"operation": "delete", "key": key, "tree": self.export(), "log": self.operation_log}
 
-    def _delete(self, node: BTreeNode, key: int) -> None:
-        t = self.t
+    def _delete(self, node: BTreeNode, key: int) -> bool:
         i = 0
         while i < len(node.keys) and key > node.keys[i]:
             i += 1
@@ -98,78 +108,67 @@ class BTree:
         if node.leaf:
             if i < len(node.keys) and node.keys[i] == key:
                 node.keys.pop(i)
-            else:
-                self.operation_log.append({"action": "not_found", "key": key})
-            return
+                return True
+            return False
 
         if i < len(node.keys) and node.keys[i] == key:
-            if len(node.children[i].keys) >= t:
-                pred = self._get_predecessor(node.children[i])
-                node.keys[i] = pred
-                self._delete(node.children[i], pred)
-            elif len(node.children[i + 1].keys) >= t:
-                succ = self._get_successor(node.children[i + 1])
-                node.keys[i] = succ
-                self._delete(node.children[i + 1], succ)
-            else:
-                self._merge(node, i)
-                self._delete(node.children[i], key)
+            pred = self._get_predecessor(node.children[i])
+            node.keys[i] = pred
+            deleted = self._delete(node.children[i], pred)
+            if not deleted:
+                return False
         else:
-            if i < len(node.children) and len(node.children[i].keys) < t:
-                self._fill(node, i)
-                if i > len(node.keys):
-                    i -= 1
-            if i < len(node.children):
-                self._delete(node.children[i], key)
+            deleted = self._delete(node.children[i], key)
+            if not deleted:
+                return False
+
+        min_keys = self.order // 2
+        child = node.children[i]
+        if len(child.keys) < min_keys:
+            if i > 0 and len(node.children[i - 1].keys) > min_keys:
+                self._borrow_left(node, i)
+            elif i < len(node.children) - 1 and len(node.children[i + 1].keys) > min_keys:
+                self._borrow_right(node, i)
+            else:
+                if i > 0:
+                    self._merge_nodes(node, i - 1)
+                else:
+                    self._merge_nodes(node, i)
+        return True
 
     def _get_predecessor(self, node: BTreeNode) -> int:
         while not node.leaf:
             node = node.children[-1]
         return node.keys[-1]
 
-    def _get_successor(self, node: BTreeNode) -> int:
-        while not node.leaf:
-            node = node.children[0]
-        return node.keys[0]
-
-    def _merge(self, node: BTreeNode, i: int) -> None:
-        child = node.children[i]
-        sibling = node.children[i + 1]
-        child.keys.append(node.keys[i])
-        child.keys.extend(sibling.keys)
+    def _borrow_left(self, parent: BTreeNode, i: int) -> None:
+        child = parent.children[i]
+        left_sibling = parent.children[i - 1]
+        child.keys.insert(0, parent.keys[i - 1])
+        parent.keys[i - 1] = left_sibling.keys.pop()
         if not child.leaf:
-            child.children.extend(sibling.children)
-        node.keys.pop(i)
-        node.children.pop(i + 1)
+            child.children.insert(0, left_sibling.children.pop())
+        self.operation_log.append({"action": "borrow_left", "index": i})
+
+    def _borrow_right(self, parent: BTreeNode, i: int) -> None:
+        child = parent.children[i]
+        right_sibling = parent.children[i + 1]
+        child.keys.append(parent.keys[i])
+        parent.keys[i] = right_sibling.keys.pop(0)
+        if not child.leaf:
+            child.children.append(right_sibling.children.pop(0))
+        self.operation_log.append({"action": "borrow_right", "index": i})
+
+    def _merge_nodes(self, parent: BTreeNode, i: int) -> None:
+        left = parent.children[i]
+        right = parent.children[i + 1]
+        left.keys.append(parent.keys[i])
+        left.keys.extend(right.keys)
+        if not left.leaf:
+            left.children.extend(right.children)
+        parent.keys.pop(i)
+        parent.children.pop(i + 1)
         self.operation_log.append({"action": "merge", "index": i})
-
-    def _fill(self, node: BTreeNode, i: int) -> None:
-        t = self.t
-        if i > 0 and len(node.children[i - 1].keys) >= t:
-            self._borrow_from_prev(node, i)
-        elif i < len(node.children) - 1 and len(node.children[i + 1].keys) >= t:
-            self._borrow_from_next(node, i)
-        else:
-            if i < len(node.children) - 1:
-                self._merge(node, i)
-            else:
-                self._merge(node, i - 1)
-
-    def _borrow_from_prev(self, node: BTreeNode, i: int) -> None:
-        child = node.children[i]
-        sibling = node.children[i - 1]
-        child.keys.insert(0, node.keys[i - 1])
-        node.keys[i - 1] = sibling.keys.pop()
-        if not child.leaf:
-            child.children.insert(0, sibling.children.pop())
-
-    def _borrow_from_next(self, node: BTreeNode, i: int) -> None:
-        child = node.children[i]
-        sibling = node.children[i + 1]
-        child.keys.append(node.keys[i])
-        node.keys[i] = sibling.keys.pop(0)
-        if not child.leaf:
-            child.children.append(sibling.children.pop(0))
 
     # ---------------------------------------------------------------- search
     def search(self, key: int) -> Dict[str, Any]:
@@ -213,9 +212,9 @@ class BTree:
         return {"valid": len(violations) == 0, "violations": violations, "tree": self.export()}
 
     def _validate_node(self, node: BTreeNode, violations: List[Dict], is_root: bool = False) -> int:
-        t = self.t
-        max_keys = 2 * t - 1
-        min_keys = t - 1 if not is_root else 1
+        order = self.order
+        max_keys = order
+        min_keys = order // 2 if not is_root else 1
 
         if len(node.keys) > max_keys:
             violations.append({

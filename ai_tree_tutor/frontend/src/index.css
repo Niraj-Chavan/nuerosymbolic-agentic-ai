@@ -784,3 +784,33 @@ body::before {
 
 @keyframes slideInLeft { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
 .slide-in { animation: slideInLeft 0.35s ease forwards; }
+
+/* ============================================================ Quiz Selects & Options */
+select option {
+  background-color: #111827 !important;
+  color: #f1f5f9 !important;
+}
+
+/* ============================================================ Quiz Option Buttons */
+.quiz-option-btn {
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.quiz-option-btn:focus,
+.quiz-option-btn:active {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
+}
+
+.quiz-option-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.quiz-option-btn.selected {
+  background: rgba(99, 102, 241, 0.25) !important;
+  border-color: var(--accent-primary) !important;
+  color: var(--text-primary) !important;
+}
+

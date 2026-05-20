@@ -19,7 +19,7 @@ from app.config import settings
 # Rate limit presets: path_prefix -> (max_requests, window_seconds)
 RATE_LIMITS: dict[str, tuple[int, int]] = {
     "/api/tree": (30, 60),
-    "/api/quiz/generate": (5, 3600),
+    "/api/quiz/generate": (50, 3600),
     "/api/quiz": (20, 60),
     "/api/concepts": (60, 60),
     "/api/analysis/complexity": (20, 60),

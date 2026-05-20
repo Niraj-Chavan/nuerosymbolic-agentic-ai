@@ -28,6 +28,11 @@ export default function ControlPanel({
   operationLog,
   treeOrder,
   onOrderChange,
+  heapType,
+  onHeapTypeChange,
+  lastOperation,
+  lastOperationKey,
+  searchFound,
   rangeLow,
   rangeHigh,
   rangeResult,
@@ -74,7 +79,7 @@ export default function ControlPanel({
           <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>
             📐 Range Query
           </label>
-          <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 6 }}>
             <input
               id="range-low"
               type="number"
@@ -82,7 +87,7 @@ export default function ControlPanel({
               placeholder="Low index"
               value={rangeLow}
               onChange={(e) => onRangeLowChange(e.target.value)}
-              style={{ flex: 1 }}
+              style={{ width: '100%' }}
             />
             <input
               id="range-high"
@@ -91,7 +96,7 @@ export default function ControlPanel({
               placeholder="High index"
               value={rangeHigh}
               onChange={(e) => onRangeHighChange(e.target.value)}
-              style={{ flex: 1 }}
+              style={{ width: '100%' }}
             />
           </div>
           <button
@@ -109,6 +114,50 @@ export default function ControlPanel({
               <span style={{ fontWeight: 800, color: 'var(--accent-tertiary)' }}>{rangeResult?.result ?? rangeResult}</span>
             </div>
           )}
+        </div>
+      )}
+
+      {selectedTree === 'heap' && (
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>
+            Heap Type
+          </label>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              id="heap-type-min"
+              className={`op-btn quiz-option-btn ${heapType === 'min' ? 'selected' : ''}`}
+              style={{
+                flex: 1,
+                padding: '6px 12px',
+                fontSize: '0.8rem',
+                background: heapType === 'min' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.03)',
+                border: `1px solid ${heapType === 'min' ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.1)'}`,
+                borderRadius: 'var(--radius-sm)',
+                color: heapType === 'min' ? 'var(--text-primary)' : 'var(--text-muted)',
+                cursor: 'pointer',
+              }}
+              onClick={() => onHeapTypeChange('min')}
+            >
+              ⬇️ Min Heap
+            </button>
+            <button
+              id="heap-type-max"
+              className={`op-btn quiz-option-btn ${heapType === 'max' ? 'selected' : ''}`}
+              style={{
+                flex: 1,
+                padding: '6px 12px',
+                fontSize: '0.8rem',
+                background: heapType === 'max' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.03)',
+                border: `1px solid ${heapType === 'max' ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.1)'}`,
+                borderRadius: 'var(--radius-sm)',
+                color: heapType === 'max' ? 'var(--text-primary)' : 'var(--text-muted)',
+                cursor: 'pointer',
+              }}
+              onClick={() => onHeapTypeChange('max')}
+            >
+              ⬆️ Max Heap
+            </button>
+          </div>
         </div>
       )}
 
@@ -142,6 +191,35 @@ export default function ControlPanel({
           </button>
         </div>
       </div>
+
+      {lastOperation === 'search' && lastOperationKey !== null && (
+        <div
+          id="search-result-alert"
+          style={{
+            marginTop: 12,
+            padding: '10px 14px',
+            borderRadius: 'var(--radius-sm)',
+            fontSize: '0.88rem',
+            fontWeight: 500,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: searchFound
+              ? 'rgba(16, 185, 129, 0.1)'
+              : 'rgba(239, 68, 68, 0.1)',
+            border: `1px solid ${
+              searchFound ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'
+            }`,
+            color: searchFound ? '#10b981' : '#ef4444',
+            animation: 'fadeIn 0.3s ease',
+          }}
+        >
+          <span>{searchFound ? '✅' : '❌'}</span>
+          <span>
+            Key <strong>{lastOperationKey}</strong> {searchFound ? 'found in the tree!' : 'not found in the tree.'}
+          </span>
+        </div>
+      )}
 
       {operationLog && operationLog.length > 0 && (
         <>

@@ -1,6 +1,6 @@
 import traceback
 import time
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
@@ -110,9 +110,16 @@ async def reset_tree(
 async def export_tree(
     tree_type: str,
     session_id: str = "default",
+    heap_type: Optional[str] = None,
+    order: Optional[int] = None,
     tree_agent=Depends(get_tree_agent),
 ):
-    return tree_agent.get_tree_export(tree_type, session_id)
+    options = {}
+    if heap_type:
+        options["heap_type"] = heap_type
+    if order:
+        options["order"] = order
+    return tree_agent.get_tree_export(tree_type, session_id, **options)
 
 
 @router.post("/operate-steps")

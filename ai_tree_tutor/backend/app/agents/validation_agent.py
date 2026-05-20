@@ -28,7 +28,7 @@ class ValidationAgent(BaseAgent):
         self._external_validators: Dict[str, Callable] = {
             "avl": lambda inst, export: validate_avl(export),
             "red_black": lambda inst, export: validate_rb(export),
-            "btree": lambda inst, export: validate_btree(export, getattr(inst, "t", 3)),
+            "btree": lambda inst, export: validate_btree(export, getattr(inst, "order", 3)),
             "bplus_tree": lambda inst, export: validate_bplus(export, getattr(inst, "order", 4)),
             "heap": lambda inst, export: validate_heap(
                 getattr(inst, "heap", []),

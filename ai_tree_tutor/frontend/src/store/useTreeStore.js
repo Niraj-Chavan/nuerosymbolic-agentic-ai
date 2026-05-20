@@ -99,8 +99,10 @@ const useTreeStore = create((set, get) => ({
   selectedTree: 'avl',
   keyValue: '',
   treeOrder: 3,
+  heapType: 'min',
   lastOperation: null,
   lastOperationKey: null,
+  searchFound: null,
   rangeLow: '',
   rangeHigh: '',
   rangeResult: null,
@@ -112,6 +114,7 @@ const useTreeStore = create((set, get) => ({
     set({
       selectedTree: tree,
       treeOrder: defaultOrder,
+      heapType: 'min',
       treeData: null,
       operationLog: [],
       validation: null,
@@ -123,6 +126,7 @@ const useTreeStore = create((set, get) => ({
       highlightedKeys: [],
       lastOperation: null,
       lastOperationKey: null,
+      searchFound: null,
       rangeLow: '',
       rangeHigh: '',
       rangeResult: null,
@@ -132,6 +136,11 @@ const useTreeStore = create((set, get) => ({
   setKeyValue: (key) => set({ keyValue: key }),
 
   setTreeOrder: (order) => set({ treeOrder: order }),
+
+  setHeapType: (type) => {
+    set({ heapType: type });
+    get().reset();
+  },
 
   setRangeLow: (v) => set({ rangeLow: v }),
   setRangeHigh: (v) => set({ rangeHigh: v }),
@@ -154,7 +163,7 @@ const useTreeStore = create((set, get) => ({
   },
 
   performOperation: async (operation) => {
-    const { selectedTree, keyValue, treeOrder } = get();
+    const { selectedTree, keyValue, treeOrder, heapType } = get();
     if (keyValue === '' || keyValue === null || keyValue === undefined) return;
     const numericKey = Number(keyValue);
     if (!Number.isFinite(numericKey)) {
@@ -163,7 +172,11 @@ const useTreeStore = create((set, get) => ({
     }
     set({ loading: true, error: null });
     try {
-      const opts = ['btree', 'bplus_tree'].includes(selectedTree) ? { order: treeOrder } : {};
+      const opts = selectedTree === 'heap'
+        ? { heap_type: heapType }
+        : ['btree', 'bplus_tree'].includes(selectedTree)
+          ? { order: treeOrder }
+          : {};
       const result = await operateTree(selectedTree, operation, numericKey, 'default', opts);
       const path = operation === 'search'
         ? (result.path || result.log?.find((l) => l.action === 'search')?.path || [])
@@ -181,6 +194,7 @@ const useTreeStore = create((set, get) => ({
         highlightedKeys: steps[0]?.highlighted_nodes || [],
         lastOperation: operation,
         lastOperationKey: numericKey,
+        searchFound: operation === 'search' ? result.found : null,
         keyValue: '',
         loading: false,
       });
@@ -199,7 +213,7 @@ const useTreeStore = create((set, get) => ({
   },
 
   fetchAnimationSteps: async (operation) => {
-    const { selectedTree, keyValue, treeOrder } = get();
+    const { selectedTree, keyValue, treeOrder, heapType } = get();
     if (keyValue === '' || keyValue === null || keyValue === undefined) return;
     const numericKey = Number(keyValue);
     if (!Number.isFinite(numericKey)) {
@@ -207,7 +221,11 @@ const useTreeStore = create((set, get) => ({
       return;
     }
     try {
-      const opts = ['btree', 'bplus_tree'].includes(selectedTree) ? { order: treeOrder } : {};
+      const opts = selectedTree === 'heap'
+        ? { heap_type: heapType }
+        : ['btree', 'bplus_tree'].includes(selectedTree)
+          ? { order: treeOrder }
+          : {};
       const res = await operateTreeSteps(selectedTree, operation, numericKey, 'default', opts);
       set({ animationSteps: res.animation_steps || [] });
       return res;
@@ -217,10 +235,14 @@ const useTreeStore = create((set, get) => ({
   },
 
   reset: async () => {
-    const { selectedTree, treeOrder } = get();
+    const { selectedTree, treeOrder, heapType } = get();
     set({ loading: true });
     try {
-      const opts = ['btree', 'bplus_tree'].includes(selectedTree) ? { order: treeOrder } : {};
+      const opts = selectedTree === 'heap'
+        ? { heap_type: heapType }
+        : ['btree', 'bplus_tree'].includes(selectedTree)
+          ? { order: treeOrder }
+          : {};
       await resetTree(selectedTree, 'default', opts);
       set({
         treeData: null,
@@ -234,6 +256,7 @@ const useTreeStore = create((set, get) => ({
         highlightedKeys: [],
         lastOperation: null,
         lastOperationKey: null,
+        searchFound: null,
         loading: false,
       });
     } catch (err) {

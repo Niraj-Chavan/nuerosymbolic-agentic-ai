@@ -19,6 +19,8 @@ def _make_key(tree_type: str, session_id: str = "default", **kwargs) -> str:
     parts = [session_id, tree_type]
     if kwargs.get("order"):
         parts.append(f"o{kwargs['order']}")
+    if kwargs.get("heap_type"):
+        parts.append(f"h{kwargs['heap_type']}")
     return "_".join(parts)
 
 
@@ -59,9 +61,12 @@ class TreeExecutionAgent(BaseAgent):
         self.trees[key] = tree_factory.create(tree_type, **kwargs)
         return {"status": "reset", "tree_type": tree_type}
 
-    def get_tree_export(self, tree_type: str, session_id: str = "default") -> Dict[str, Any]:
+    def get_tree_export(self, tree_type: str, session_id: str = "default", **kwargs) -> Dict[str, Any]:
+        key = _make_key(tree_type, session_id, **kwargs)
+        if key in self.trees:
+            return {"tree": self.trees[key].export()}
         prefix = f"{session_id}_{tree_type}"
-        for key in self.trees:
-            if key == prefix or key.startswith(prefix + "_"):
-                return {"tree": self.trees[key].export()}
+        for k in self.trees:
+            if k == prefix or k.startswith(prefix + "_"):
+                return {"tree": self.trees[k].export()}
         return {"tree": None}

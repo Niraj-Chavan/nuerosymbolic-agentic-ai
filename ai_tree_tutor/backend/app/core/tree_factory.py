@@ -25,7 +25,7 @@ _REGISTRY: Dict[str, TreeFactory] = {
     "red_black": lambda **kw: RedBlackTree(),
     "heap": lambda **kw: BinaryHeap(heap_type=kw.get("heap_type", "min")),
     "segment_tree": lambda **kw: SegmentTree(data=kw.get("data", [])),
-    "btree": lambda **kw: BTree(t=kw.get("order", 3)),
+    "btree": lambda **kw: BTree(order=kw.get("order", 3)),
     "bplus_tree": lambda **kw: BPlusTree(order=kw.get("order", 4)),
 }
 
