@@ -1,0 +1,66 @@
+{
+  "avl": {
+    "balance_factor_exceeded": {
+      "weak_concept": "AVL Rotations",
+      "misconception": "You may not fully understand when and how to apply AVL rotations to restore balance after an insertion or deletion.",
+      "severity": "high",
+      "prerequisite_gaps": ["Binary Search Tree Properties", "Height Calculation"],
+      "recommended_exercises": ["Practice identifying imbalance cases (LL, RR, LR, RL)", "Trace rotations step by step"]
+    },
+    "bst_violation": {
+      "weak_concept": "BST Property",
+      "misconception": "The BST ordering property (left < root < right) may be violated.",
+      "severity": "high",
+      "prerequisite_gaps": ["Binary Search Trees", "Recursive Thinking"],
+      "recommended_exercises": ["Verify BST property on sample trees", "Implement BST validation"]
+    }
+  },
+  "red_black": {
+    "root_not_black": {
+      "weak_concept": "Red-Black Tree Root Property",
+      "misconception": "The root of a Red-Black tree must always be black.",
+      "severity": "medium",
+      "prerequisite_gaps": ["Red-Black Tree Properties"],
+      "recommended_exercises": ["Recolor the root to black", "Check root color after insertions"]
+    },
+    "consecutive_red": {
+      "weak_concept": "Red-Black Tree Coloring",
+      "misconception": "Two consecutive red nodes appeared. Red nodes cannot have red children.",
+      "severity": "high",
+      "prerequisite_gaps": ["Red-Black Tree Insertion", "Red-Black Tree Rotations"],
+      "recommended_exercises": ["Practice fixing consecutive red violations", "Trace RB insert with recolor + rotate"]
+    },
+    "unequal_black_height": {
+      "weak_concept": "Black Height Property",
+      "misconception": "All paths from root to leaves must have the same number of black nodes.",
+      "severity": "high",
+      "prerequisite_gaps": ["Black Height Counting", "Tree Paths"],
+      "recommended_exercises": ["Calculate black height of paths", "Identify which paths violate the property"]
+    }
+  },
+  "heap": {
+    "heap_property_violated": {
+      "weak_concept": "Heap Property",
+      "misconception": "The heap property (parent <= children for min-heap) is violated.",
+      "severity": "high",
+      "prerequisite_gaps": ["Complete Binary Trees", "Array Representation of Trees"],
+      "recommended_exercises": ["Verify heap property on array", "Trace sift-up and sift-down operations"]
+    }
+  },
+  "btree": {
+    "too_many_keys": {
+      "weak_concept": "B-Tree Node Capacity",
+      "misconception": "A B-Tree node exceeded its maximum number of keys.",
+      "severity": "high",
+      "prerequisite_gaps": ["B-Tree Properties", "Node Splitting"],
+      "recommended_exercises": ["Practice splitting a full B-Tree node", "Determine correct split point"]
+    },
+    "unequal_leaf_depth": {
+      "weak_concept": "B-Tree Leaf Depth",
+      "misconception": "Not all leaves are at the same depth.",
+      "severity": "high",
+      "prerequisite_gaps": ["B-Tree Properties", "Tree Balance Concepts"],
+      "recommended_exercises": ["Check leaf depths after insertion", "Identify which operation caused imbalance"]
+    }
+  }
+}

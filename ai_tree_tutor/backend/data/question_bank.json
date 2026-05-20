@@ -1,0 +1,1022 @@
+[
+  {
+    "id": "avl_001",
+    "question": "What is the maximum allowed balance factor for any node in an AVL tree?",
+    "options": ["0", "1", "2", "log n"],
+    "correct_index": 1,
+    "explanation": "Balance factors of -1, 0, or 1 are allowed. A balance factor of 2 or -2 triggers rotation.",
+    "concept": "Balance Factor",
+    "difficulty": 0.2,
+    "difficulty_label": "easy",
+    "question_type": "conceptual",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Recall AVL balance factor definition", "Identify allowed range"],
+    "tree_type": "avl"
+  },
+  {
+    "id": "avl_002",
+    "question": "After inserting 3 into the AVL tree [10, 5, 15], what rotation is needed?",
+    "options": ["Left rotation", "Right rotation", "Left-Right rotation", "Right-Left rotation"],
+    "correct_index": 1,
+    "explanation": "The tree is left-skewed: 10 has BF=2, 5 has BF=1 — LL case requiring single right rotation.",
+    "concept": "AVL Rotations",
+    "difficulty": 0.4,
+    "difficulty_label": "medium_easy",
+    "question_type": "trace",
+    "misconception_targeted": "LL case requires right rotation, not left",
+    "reasoning_steps": ["Compute balance factors after insertion", "Identify the case pattern (LL/RR/LR/RL)", "Select the corresponding rotation"],
+    "tree_type": "avl"
+  },
+  {
+    "id": "avl_003",
+    "question": "Why must every AVL node store or compute its height?",
+    "options": [
+      "To display the tree structure to the user",
+      "To detect imbalance by comparing left and right subtree heights",
+      "To determine the parent node",
+      "Height is only needed for deletion, not insertion"
+    ],
+    "correct_index": 1,
+    "explanation": "Height enables O(1) balance factor computation: BF = height(left) - height(right). Without height, detecting imbalance would require O(n) traversal.",
+    "concept": "Balance Factor",
+    "difficulty": 0.5,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "Height is decorative, not functional",
+    "reasoning_steps": ["Recognize balance factor definition", "Understand why O(1) access to subtree heights is necessary", "Connect to AVL efficiency guarantees"],
+    "tree_type": "avl"
+  },
+  {
+    "id": "avl_004",
+    "question": "Predict the tree state after inserting 1 into this AVL tree: [10, 5] (root=10, left child=5).",
+    "options": [
+      "[10, 5, 1] with a right rotation on 10",
+      "[10, 5, 1] no rotation needed",
+      "[5, 1, 10] after a right rotation on 10",
+      "[5, 1, 10] after a left rotation on 5"
+    ],
+    "correct_index": 2,
+    "explanation": "Insert 1 → tree is 10(5(1), null). BF of 10 = 2, BF of 5 = 1 → LL case. Right rotation on 10 makes 5 the root with children 1 and 10.",
+    "concept": "AVL Rotations",
+    "difficulty": 0.5,
+    "difficulty_label": "medium",
+    "question_type": "visualization",
+    "misconception_targeted": "Rotations rearrange keys, not just pointers",
+    "reasoning_steps": ["Insert the value at correct BST position", "Compute balance factors bottom-up", "Identify rotation case", "Apply rotation and produce new tree"],
+    "tree_type": "avl"
+  },
+  {
+    "id": "avl_005",
+    "question": "A student says: 'Balance factor only needs to be checked at the root after insertion.' Why is this wrong?",
+    "options": [
+      "Balance factor must be checked at every ancestor of the insertion point",
+      "Balance factor is checked only at leaves",
+      "The root is the only node that ever becomes imbalanced",
+      "It is actually correct — checking the root is sufficient"
+    ],
+    "correct_index": 0,
+    "explanation": "Insertion can imbalance any ancestor node along the insertion path. Each ancestor's balance factor changes by ±1, so all must be checked bottom-up until the root or a rebalanced node.",
+    "concept": "Balance Factor",
+    "difficulty": 0.6,
+    "difficulty_label": "medium",
+    "question_type": "misconception_targeted",
+    "misconception_targeted": "Only the root needs rebalancing check",
+    "reasoning_steps": ["Trace which nodes' heights change on insertion", "Understand that imbalance propagates upward", "Connect ancestor checking to correctness guarantee"],
+    "tree_type": "avl"
+  },
+  {
+    "id": "avl_006",
+    "question": "Why does AVL use a strict balance factor of ±1 while Red-Black trees allow some imbalance?",
+    "options": [
+      "AVL trees are older, so they use a simpler rule",
+      "Stricter balance gives faster lookups at the cost of more rotations on insert/delete",
+      "Red-Black trees cannot compute height efficiently",
+      "AVL trees only work with integer keys"
+    ],
+    "correct_index": 1,
+    "explanation": "AVL's stricter balance guarantees height ≤ 1.44 log n (vs RB's ≤ 2 log n), giving faster lookups. The trade-off is more rotations during writes. There is no free lunch in balancing.",
+    "concept": "Balance Factor",
+    "difficulty": 0.7,
+    "difficulty_label": "hard",
+    "question_type": "reasoning",
+    "misconception_targeted": "All balanced trees have identical performance",
+    "reasoning_steps": ["Recall AVL and RB balance invariants", "Derive height bounds from each invariant", "Connect height bound to lookup vs write performance"],
+    "tree_type": "avl"
+  },
+  {
+    "id": "avl_007",
+    "question": "Insert [20, 10, 30, 5, 15, 25, 35, 3] into an AVL tree step by step. Which insertion first triggers a rotation?",
+    "options": [
+      "Inserting 5",
+      "Inserting 3",
+      "Inserting 15",
+      "Inserting 25"
+    ],
+    "correct_index": 1,
+    "explanation": "After inserting 20, 10, 30, 5, 15, 25, 35, then 3: node 10 has left height 2 (5→3) and right height 0 → BF=2. This is the first imbalance. 10(5(3), null) → LL case → right rotation on 10.",
+    "concept": "AVL Rotations",
+    "difficulty": 0.7,
+    "difficulty_label": "hard",
+    "question_type": "trace",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Insert each value maintaining BST order", "Update heights at each step", "Check balance factors of all ancestors", "Identify first node with |BF| > 1"],
+    "tree_type": "avl"
+  },
+  {
+    "id": "avl_008",
+    "question": "Consider this scenario: inserting a value into an AVL tree causes a Right-Left (RL) imbalance. What does this imply about the tree structure?",
+    "options": [
+      "The imbalance is at a node whose right child has a left-heavy subtree",
+      "The imbalance is at a node whose left child has a right-heavy subtree",
+      "Two consecutive right rotations are needed",
+      "The tree was not a valid BST before insertion"
+    ],
+    "correct_index": 0,
+    "explanation": "RL case: node's BF = -2, right child's BF = +1. The right child is left-heavy. Fix: right rotation on right child (converting to RR), then left rotation on the original node.",
+    "concept": "AVL Rotations",
+    "difficulty": 0.65,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "Rotation cases are arbitrary names",
+    "reasoning_steps": ["Recognize RL means right child is left-heavy", "First rotation makes the case into RR", "Second rotation fixes the RR case"],
+    "tree_type": "avl"
+  },
+  {
+    "id": "rb_001",
+    "question": "What color must the root of a Red-Black tree always be?",
+    "options": ["Red", "Black", "Either red or black", "It depends on the parent"],
+    "correct_index": 1,
+    "explanation": "Property 2: the root is always black. This ensures that the maximum possible imbalance from root to leaf is bounded.",
+    "concept": "Red-Black Tree Properties",
+    "difficulty": 0.15,
+    "difficulty_label": "easy",
+    "question_type": "conceptual",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Recall the 5 RB properties", "Identify the root color rule"],
+    "tree_type": "red_black"
+  },
+  {
+    "id": "rb_002",
+    "question": "Two consecutive red nodes appear during a Red-Black insertion. What does this mean?",
+    "options": [
+      "This is always allowed for efficiency",
+      "A violation of Property 3 — must be fixed via recoloring and possibly rotation",
+      "The tree must be rebuilt from scratch",
+      "Only the lower red node should be turned black"
+    ],
+    "correct_index": 1,
+    "explanation": "Consecutive reds violate Property 3 (no red node has a red child). Fix depends on uncle color: red uncle → recolor, black uncle → rotate + recolor.",
+    "concept": "Red-Black Tree Insertion",
+    "difficulty": 0.3,
+    "difficulty_label": "easy",
+    "question_type": "conceptual",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Recognize Property 3 violation", "Check uncle color", "Apply recolor or rotate strategy"],
+    "tree_type": "red_black"
+  },
+  {
+    "id": "rb_003",
+    "question": "In an RB tree, a black node has a red left child and we are inserting under the red child. The uncle is black. What happens?",
+    "options": [
+      "Just recolor the parent and uncle to black, grandparent to red",
+      "Perform a rotation and recolor — the specific rotation depends on orientation",
+      "Ignore the violation — it resolves itself",
+      "Recolor the new node to black"
+    ],
+    "correct_index": 1,
+    "explanation": "When uncle is black, recoloring alone won't fix it. A rotation is needed to restructure, followed by recolor. The exact rotation (left/right) depends on whether the case is LL, LR, RL, or RR.",
+    "concept": "Red-Black Tree Insertion",
+    "difficulty": 0.5,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "Recoloring always fixes RB violations",
+    "reasoning_steps": ["Check uncle color to determine strategy", "Recognize recolor-only is insufficient when uncle is black", "Identify the rotation case", "Execute rotation then recolor"],
+    "tree_type": "red_black"
+  },
+  {
+    "id": "rb_004",
+    "question": "Why does a Red-Black tree allow a path to have twice as many black nodes as another path, while AVL does not allow such imbalance?",
+    "options": [
+      "RB trees are less efficient than AVL trees",
+      "RB trees bound the black-height, not the total height — this reduces rotations while keeping O(log n)",
+      "AVL trees don't use colors so they are simpler",
+      "RB trees don't actually guarantee logarithmic height"
+    ],
+    "correct_index": 1,
+    "explanation": "RB trees guarantee black-height balance: every path has the same number of black nodes. The longest path (alternating red-black) is at most 2× the shortest (all black). This gives O(log n) height with fewer rotations than AVL.",
+    "concept": "Red-Black Tree Properties",
+    "difficulty": 0.65,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "RB trees are just AVL with colors",
+    "reasoning_steps": ["Understand black-height invariant", "Derive that longest path ≤ 2 × shortest path", "Connect to O(log n) bound", "Compare rotation frequency with AVL"],
+    "tree_type": "red_black"
+  },
+  {
+    "id": "rb_005",
+    "question": "Predict the tree state after inserting 10, 5, 15 into an empty Red-Black tree:",
+    "options": [
+      "Root 10 (black), 5 (red), 15 (red)",
+      "Root 10 (black), 5 (black), 15 (black)",
+      "Root 10 (red), 5 (black), 15 (black)",
+      "Root 5 (black), 10 (red), 15 (red)"
+    ],
+    "correct_index": 0,
+    "explanation": "Insert 10 → root (black). Insert 5 → 5 red, valid. Insert 15 → 15 red, valid. All properties satisfied: root black, no consecutive reds, all leaves have same black-height (1).",
+    "concept": "Red-Black Tree Insertion",
+    "difficulty": 0.35,
+    "difficulty_label": "medium_easy",
+    "question_type": "visualization",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Insert root as black", "Insert subsequent nodes as red", "Check each RB property after each insertion", "Verify no fix-up is needed"],
+    "tree_type": "red_black"
+  },
+  {
+    "id": "rb_006",
+    "question": "After inserting 3 into [10(root,b), 5(r)] in an RB tree, consecutive reds appear. The uncle (15) is null (considered black). What fix is needed?",
+    "options": [
+      "Recolor: make 5 black, 10 red, 15 red — but 15 doesn't exist",
+      "Right rotation on 10, then recolor: 5 black, 10 red",
+      "Nothing — consecutive reds are sometimes allowed",
+      "Delete 3 and try a different insertion"
+    ],
+    "correct_index": 1,
+    "explanation": "Tree: 10(b) → 5(r) → 3(r). Uncle of 3 is null (black). This is a left-left case: right rotation on 10, then recolor 5→black, 10→red. Result: 5(b) → 3(r), 10(r).",
+    "concept": "Red-Black Tree Insertion",
+    "difficulty": 0.55,
+    "difficulty_label": "medium",
+    "question_type": "visualization",
+    "misconception_targeted": "Recoloring alone always fixes violations",
+    "reasoning_steps": ["Insert 3 as red, identify consecutive red violation", "Check uncle color (null = black)", "Recognize LL rotation case", "Execute rotation then recolor"],
+    "tree_type": "red_black"
+  },
+  {
+    "id": "rb_007",
+    "question": "A student claims: 'If a Red-Black tree insertion causes consecutive reds with a red uncle, we should rotate first then recolor.' Why is this approach incorrect?",
+    "options": [
+      "Rotating never helps fix consecutive reds",
+      "With a red uncle, recoloring first fixes the violation without restructuring — rotation would be unnecessary work",
+      "The approach is actually correct for all cases",
+      "Rotation should only be used for deletions, not insertions"
+    ],
+    "correct_index": 1,
+    "explanation": "Red uncle means the violation can be fixed locally by recoloring (parent+uncle→black, grandparent→red). Rotation is only needed when uncle is black. Rotating unnecessarily adds complexity and may create new violations.",
+    "concept": "Red-Black Tree Insertion",
+    "difficulty": 0.6,
+    "difficulty_label": "medium",
+    "question_type": "misconception_targeted",
+    "misconception_targeted": "Insert fix-up always requires rotation",
+    "reasoning_steps": ["Compare uncle=red vs uncle=black strategies", "Understand why red uncle enables local fix", "Trace the effect of unnecessary rotation", "Connect to efficiency: recolor is O(1), rotation is O(1) too, but restructures tree"],
+    "tree_type": "red_black"
+  },
+  {
+    "id": "rb_008",
+    "question": "Why do RB Tree deletions potentially require more fix-up cases than insertions?",
+    "options": [
+      "They don't — insert and delete fix-up are symmetric",
+      "Deleting a black node reduces black-height on one path, potentially violating Property 4",
+      "Deletions in any tree are always more complex than insertions",
+      "RB Tree delete fix-up is simpler because there are fewer cases"
+    ],
+    "correct_index": 1,
+    "explanation": "Deleting a black node reduces black-height along its path, violating Property 4 (all paths same black-height). Restoring this requires more cases (sibling color, sibling children colors) compared to insert, which only needs to fix consecutive reds.",
+    "concept": "Red-Black Tree Properties",
+    "difficulty": 0.75,
+    "difficulty_label": "hard",
+    "question_type": "reasoning",
+    "misconception_targeted": "Insert and delete fix-up are symmetric",
+    "reasoning_steps": ["Compare what invariants insert vs delete can violate", "Understand why black deletion creates black-height deficit", "Recognize that fixing black-height requires more cases locally"],
+    "tree_type": "red_black"
+  },
+  {
+    "id": "heap_001",
+    "question": "In a min-heap, where is the smallest element always located?",
+    "options": ["At a leaf", "At the root", "At the last position", "At depth 2"],
+    "correct_index": 1,
+    "explanation": "The heap property ensures parent ≤ children recursively, so the minimum is always at the root.",
+    "concept": "Heap Property",
+    "difficulty": 0.15,
+    "difficulty_label": "easy",
+    "question_type": "conceptual",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Recall min-heap property definition", "Apply recursively to conclude root is minimum"],
+    "tree_type": "heap"
+  },
+  {
+    "id": "heap_002",
+    "question": "After extracting the min from a min-heap, what is the first step?",
+    "options": [
+      "Sift-up the new root until heap property is restored",
+      "Replace the root with the last element, then sift-down",
+      "Rebuild the entire heap from scratch",
+      "Remove the root and promote the smallest child"
+    ],
+    "correct_index": 1,
+    "explanation": "Move the last element to root (maintaining complete tree structure), then sift-down to restore the heap property. This is O(log n).",
+    "concept": "Heap Property",
+    "difficulty": 0.3,
+    "difficulty_label": "easy",
+    "question_type": "conceptual",
+    "misconception_targeted": "Deleting the root means promoting children",
+    "reasoning_steps": ["Remove root element", "Maintain complete tree by moving last element", "Restore heap property via sift-down"],
+    "tree_type": "heap"
+  },
+  {
+    "id": "heap_003",
+    "question": "When sifting down in a min-heap, how do you decide which child to swap with?",
+    "options": [
+      "Swap with the left child if it is smaller than the parent",
+      "Swap with the smaller of the two children",
+      "Swap with both children if both are smaller than the parent",
+      "Swap with the right child if it is smaller than the parent"
+    ],
+    "correct_index": 1,
+    "explanation": "Swap with the smaller child so that the new parent is ≤ both children. Swapping with the larger child could still leave the parent larger than the other child, violating the heap property.",
+    "concept": "Heap Property",
+    "difficulty": 0.4,
+    "difficulty_label": "medium_easy",
+    "question_type": "reasoning",
+    "misconception_targeted": "Any child smaller than parent works as swap target",
+    "reasoning_steps": ["Check both children against parent", "Identify the smaller child", "Swap parent with smaller child", "Continue until parent ≤ both children"],
+    "tree_type": "heap"
+  },
+  {
+    "id": "heap_004",
+    "question": "A student says: 'Building a heap from an unsorted array takes O(n log n) by inserting each element.' What is wrong with this reasoning?",
+    "options": [
+      "Nothing — building a heap is O(n log n)",
+      "The heapify algorithm uses sift-down from the last internal node, which is O(n), not O(n log n)",
+      "Insertion into a heap is O(1), not O(log n)",
+      "Arrays cannot be turned into heaps without extra memory"
+    ],
+    "correct_index": 1,
+    "explanation": "Bottom-up heapify calls sift-down on the n/2 internal nodes. Most nodes are near the bottom, so most sift-downs are O(1). The total is O(n), derived from the sum of a geometric series. The top-down insertion approach would indeed be O(n log n).",
+    "concept": "Heapify",
+    "difficulty": 0.7,
+    "difficulty_label": "hard",
+    "question_type": "misconception_targeted",
+    "misconception_targeted": "Building a heap costs O(n log n)",
+    "reasoning_steps": ["Compare top-down insertion vs bottom-up heapify", "Understand that heapify starts from the last internal node and sifts down", "Recognize that most sift-downs are O(1), giving O(n) total"],
+    "tree_type": "heap"
+  },
+  {
+    "id": "heap_005",
+    "question": "Visualize the array representation of a min-heap: [2, 5, 3, 8, 7, 6]. After inserting 1, what is the new array?",
+    "options": [
+      "[1, 2, 3, 8, 7, 6, 5]",
+      "[2, 1, 3, 8, 7, 6, 5]",
+      "[1, 5, 2, 8, 7, 6, 3]",
+      "[1, 2, 3, 8, 7, 5, 6]"
+    ],
+    "correct_index": 0,
+    "explanation": "Append 1 at end → [2,5,3,8,7,6,1]. Sift-up: 1 at index 6, parent=3 at index 2, swap → [2,5,1,8,7,6,3]. 1 at index 2, parent=2 at index 0, swap → [1,5,2,8,7,6,3]. Done.",
+    "concept": "Heap Property",
+    "difficulty": 0.55,
+    "difficulty_label": "medium",
+    "question_type": "visualization",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Append new value at end of array", "Compare with parent, swap if smaller", "Repeat until parent is smaller or root reached"],
+    "tree_type": "heap"
+  },
+  {
+    "id": "heap_006",
+    "question": "Why must a heap be a complete binary tree?",
+    "options": [
+      "Complete trees are the only type that can be stored efficiently in an array",
+      "The O(log n) height guarantee comes from the complete tree property",
+      "Both A and B are correct — completeness enables array storage and guarantees logarithmic height",
+      "Completeness is optional for heap correctness but improves performance"
+    ],
+    "correct_index": 2,
+    "explanation": "Completeness ensures two things: (1) array indexing formulas (2i+1, 2i+2, floor((i-1)/2)) work without gaps; (2) the tree height is exactly ⌊log n⌋, guaranteeing O(log n) operations.",
+    "concept": "Heap Property",
+    "difficulty": 0.6,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "Complete tree property is arbitrary",
+    "reasoning_steps": ["Understand complete tree definition: all levels filled left-to-right", "Connect completeness to array index mapping", "Connect completeness to height bound = ⌊log n⌋"],
+    "tree_type": "heap"
+  },
+  {
+    "id": "btree_001",
+    "question": "What happens when a B-Tree node exceeds its maximum key capacity?",
+    "options": [
+      "The tree is rebalanced from scratch",
+      "The node splits and the median key moves up",
+      "The overflow key is discarded",
+      "A new tree is created"
+    ],
+    "correct_index": 1,
+    "explanation": "The median key is promoted to the parent, and the node splits into two nodes each with floor((t-1)/2) keys.",
+    "concept": "B-Tree Insertion",
+    "difficulty": 0.25,
+    "difficulty_label": "easy",
+    "question_type": "conceptual",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Identify node overflow", "Select median key", "Split into two nodes and promote median"],
+    "tree_type": "btree"
+  },
+  {
+    "id": "btree_002",
+    "question": "A B-Tree of order 5 (max 4 keys per node) has a root that just reached 4 keys. On the next insertion, what must happen?",
+    "options": [
+      "The root splits, creating a new root with the median — tree height increases by 1",
+      "The new key replaces the smallest key in the root",
+      "The tree converts to a B+ Tree",
+      "The root merges with its largest child"
+    ],
+    "correct_index": 0,
+    "explanation": "Root split is the only way B-Tree height grows. The median key becomes the new root with two children. This is the defining characteristic: B-Trees grow upward, not downward.",
+    "concept": "B-Tree Insertion",
+    "difficulty": 0.55,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "Trees only grow at leaves",
+    "reasoning_steps": ["Recognize root is full (4 keys in order 5)", "Insert triggers root split", "Median promotes to new root", "Height increases by 1"],
+    "tree_type": "btree"
+  },
+  {
+    "id": "btree_003",
+    "question": "Why does a B-Tree maintain all leaves at the same depth?",
+    "options": [
+      "It's coincidental — B-Trees don't guarantee this",
+      "The split-and-promote mechanism ensures every leaf path grows equally",
+      "Leaves are at different depths; the data is just linked for iteration",
+      "B-Trees require periodic full rebalancing to maintain leaf depth"
+    ],
+    "correct_index": 1,
+    "explanation": "Splits always promote the median upward, and merges always pull from siblings. This ensures every leaf path grows (on split) or shrinks (on merge) uniformly. All leaves remain at the same depth by construction.",
+    "concept": "B-Tree Insertion",
+    "difficulty": 0.7,
+    "difficulty_label": "hard",
+    "question_type": "reasoning",
+    "misconception_targeted": "B-Tree leaf balance is maintained by periodic rebalancing",
+    "reasoning_steps": ["Understand split propagates height increase upward", "Understand merge propagates height decrease upward", "Recognize that root split/merge is the only way height changes", "Conclude all leaves stay at same depth"],
+    "tree_type": "btree"
+  },
+  {
+    "id": "btree_004",
+    "question": "In a B-Tree of order 3 (max 2 keys), visualize the tree after inserting [10, 20, 30, 5] into an empty tree:",
+    "options": [
+      "Root: [20] → children: [5, 10], [30]",
+      "Root: [10, 20, 30, 5] (single node)",
+      "Root: [10, 20] → children: [5], [30]",
+      "Root: [20] → children: [10], [30] with 5 inserted into [10]"
+    ],
+    "correct_index": 0,
+    "explanation": "10 → [10]. 20 → [10,20]. 30 overflows: split at median 20. Root [20] with children [10], [30]. 5 inserts into [10] → [5,10]. Final: root[20] → [5,10], [30].",
+    "concept": "B-Tree Insertion",
+    "difficulty": 0.6,
+    "difficulty_label": "medium",
+    "question_type": "visualization",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Insert keys in order, maintaining sorted order within nodes", "When a node exceeds max keys, split at median", "Promote median to parent", "Create new root if parent is null"],
+    "tree_type": "btree"
+  },
+  {
+    "id": "btree_005",
+    "question": "What is the key difference between B-Tree and B+ Tree leaf node structure?",
+    "options": [
+      "B+ Tree leaves store all data keys; internal nodes only store routing keys",
+      "B-Tree leaves can be linked together; B+ Tree leaves cannot",
+      "B+ Tree leaves do not store keys, only pointers to records",
+      "There is no structural difference between B and B+ leaf nodes"
+    ],
+    "correct_index": 0,
+    "explanation": "In B+ Trees, internal nodes only contain routing keys (copies) to guide searches. All actual data keys reside only in leaf nodes, which are linked for efficient range traversal. B-Trees store all keys in every node.",
+    "concept": "B-Tree Insertion",
+    "difficulty": 0.55,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "B-Tree and B+ Tree are identical",
+    "reasoning_steps": ["Compare B-Tree key storage: keys in all nodes", "Compare B+ Tree: internal nodes route, leaves hold all keys", "Understand why B+ Tree enables efficient range queries"],
+    "tree_type": "btree"
+  },
+  {
+    "id": "seg_001",
+    "question": "What is the height of a segment tree built on an array of n elements?",
+    "options": ["n", "ceil(log2(n)) + 1", "n^2", "sqrt(n)"],
+    "correct_index": 1,
+    "explanation": "Segment tree recursively divides the array in half. Height = ceil(log2(n)) + 1 ≈ 4n nodes total.",
+    "concept": "Segment Tree Structure",
+    "difficulty": 0.3,
+    "difficulty_label": "easy",
+    "question_type": "conceptual",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Understand recursive division into halves", "Count levels until leaf size = 1", "Add 1 for the leaf level"],
+    "tree_type": "segment_tree"
+  },
+  {
+    "id": "seg_002",
+    "question": "Why does a segment tree range query only visit O(log n) nodes instead of all nodes in the range?",
+    "options": [
+      "Because the tree is stored in an array so access is O(1)",
+      "Because each node covers a contiguous range — if a node's range is fully inside the query, we use its precomputed value without recursing deeper",
+      "It actually does visit all nodes, but it's still fast",
+      "Because only leaf nodes store values; internal nodes are for indexing only"
+    ],
+    "correct_index": 1,
+    "explanation": "Each node stores the aggregate (sum/min/max) of its entire range. If the query fully covers a node's range, we stop there and use the cached value. Only boundary nodes where the query partially overlaps need to recurse. This gives O(log n) per level.",
+    "concept": "Segment Tree Structure",
+    "difficulty": 0.55,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "Range query visits every element in the range",
+    "reasoning_steps": ["Understand each node covers a fixed contiguous range", "Recognize fully-covered nodes can be used directly", "Boundary nodes need recursion into children", "Count visited nodes: 2 per level × log n levels"],
+    "tree_type": "segment_tree"
+  },
+  {
+    "id": "seg_003",
+    "question": "A segment tree stores sums. The array is [3, 1, 4, 1, 5, 9, 2, 6]. Without building the full tree, which node values are used to compute range sum(2, 5) (0-indexed)?",
+    "options": [
+      "Nodes covering [2,2], [3,3], [4,4], [5,5] (all four leaf nodes)",
+      "Node [2,3] and node [4,5]",
+      "Node [2,5] directly",
+      "Nodes [2,2], [3,5]"
+    ],
+    "correct_index": 1,
+    "explanation": "Range [2,5]: Node [2,3] (sum=4+1=5) is fully covered. Node [4,5] (sum=5+9=14) is fully covered. Total = 19. Only 2 nodes visited instead of 4 leaves.",
+    "concept": "Segment Tree Structure",
+    "difficulty": 0.6,
+    "difficulty_label": "medium",
+    "question_type": "visualization",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Visualize segment tree decomposition of [2,5]", "Identify which node ranges are fully inside [2,5]", "Use precomputed values from those nodes"],
+    "tree_type": "segment_tree"
+  },
+  {
+    "id": "seg_004",
+    "question": "A student implements range update on a segment tree by updating all O(n) leaf nodes in the range. Why is this approach incorrect for large arrays?",
+    "options": [
+      "Segment trees cannot support range updates",
+      "Lazy propagation defers updates to child nodes until they are queried, making range update O(log n) instead of O(n)",
+      "Leaf nodes cannot be updated individually",
+      "Range updates should be done by rebuilding the tree"
+    ],
+    "correct_index": 1,
+    "explanation": "Lazy propagation: when a range update fully covers a node, we store the update in a 'lazy tag' and only push it to children when needed. This makes range update O(log n). Without it, updating a range of k elements requires O(k log n).",
+    "concept": "Segment Tree Structure",
+    "difficulty": 0.7,
+    "difficulty_label": "hard",
+    "question_type": "misconception_targeted",
+    "misconception_targeted": "Range updates must touch every element",
+    "reasoning_steps": ["Understand the cost of naive leaf-by-leaf update", "Learn lazy tag: store pending update at covering node", "Push tag only when children are accessed", "Analyze O(log n) bound with lazy propagation"],
+    "tree_type": "segment_tree"
+  },
+  {
+    "id": "seg_005",
+    "question": "In a segment tree with lazy propagation, when do we 'push' a lazy tag to children?",
+    "options": [
+      "Immediately when the tag is created",
+      "Only when we need to visit a child node (during a query or deeper update)",
+      "At the end of all operations",
+      "Lazy tags are stored at leaves, not internal nodes"
+    ],
+    "correct_index": 1,
+    "explanation": "A lazy tag sits at a node until an operation needs to go deeper. The push happens on-demand: before recursing into children, we push the current node's tag. This ensures correctness while deferring work until necessary.",
+    "concept": "Segment Tree Structure",
+    "difficulty": 0.55,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "Lazy tags are pushed immediately",
+    "reasoning_steps": ["Lazy tag is stored when update covers full node", "Tag remains until a query/update needs the children", "Push transfers tag to children before recursing"],
+    "tree_type": "segment_tree"
+  },
+  {
+    "id": "cross_001",
+    "question": "A student has learned AVL trees and is now studying Red-Black trees. They claim: 'Rotations in RB trees work exactly like AVL rotations.' What nuance are they missing?",
+    "options": [
+      "RB rotations are exactly the same — the student is correct",
+      "AVL rotations update heights, while RB rotations update colors and parent pointers differently",
+      "RB trees never use rotations — only recoloring",
+      "AVL rotations are left/right, but RB rotations are diagonal"
+    ],
+    "correct_index": 1,
+    "explanation": "The pointer restructuring during rotations is similar, but AVL rotations must update height attributes for balance factor computation. RB rotations must recolor nodes and maintain the RB invariants (especially black-height). The purpose and post-rotation invariants differ.",
+    "concept": "Red-Black Tree Insertion",
+    "difficulty": 0.65,
+    "difficulty_label": "medium",
+    "question_type": "misconception_targeted",
+    "misconception_targeted": "AVL and RB rotations are identical",
+    "reasoning_steps": ["Identify what AVL rotation must update (heights)", "Identify what RB rotation must update (colors + black-height)", "Compare the post-rotation invariants for each", "Understand the same pointer mechanics serve different purposes"],
+    "tree_type": "red_black"
+  },
+  {
+    "id": "cross_002",
+    "question": "Why is the balance factor range in AVL (±1) a stricter condition than the Red-Black tree's invariants?",
+    "options": [
+      "It isn't — RB trees are actually stricter",
+      "AVL bounds absolute height difference, while RB only constrains black-height",
+      "RB trees don't bound height at all",
+      "Both trees guarantee the same maximum height"
+    ],
+    "correct_index": 1,
+    "explanation": "AVL requires |height(left) - height(right)| ≤ 1 for every node, giving height ≤ 1.44 log n. RB only requires equal black-heights on all paths, giving height ≤ 2 log n. AVL is stricter, leading to faster lookups but more rotations.",
+    "concept": "Balance Factor",
+    "difficulty": 0.75,
+    "difficulty_label": "hard",
+    "question_type": "reasoning",
+    "misconception_targeted": "All self-balancing trees are equally strict",
+    "reasoning_steps": ["Compare the invariants: AVL vs RB", "Derive height bound from each invariant", "Connect strictness to lookup vs insert/delete performance", "Understand the engineering trade-off"],
+    "tree_type": "avl"
+  },
+  {
+    "id": "cross_003",
+    "question": "A B-Tree of order 5 and an AVL tree both contain 1 million keys. Which will have fewer levels?",
+    "options": [
+      "The AVL tree will have fewer levels (≤ 1.44 log₂(1M) ≈ 29)",
+      "The B-Tree will have fewer levels (log₅(1M) ≈ 9)",
+      "They will have approximately the same number of levels",
+      "It depends entirely on the insertion order"
+    ],
+    "correct_index": 1,
+    "explanation": "B-Tree nodes hold multiple keys. Height = log_t(n) where t is the minimum degree. For order 5 (t=3), height ≤ log₃(1M) ≈ 13 (internal nodes have 2-5 children). AVL height ≤ 1.44 log₂(n) ≈ 29. B-Trees are shallower due to high branching factors.",
+    "concept": "B-Tree Insertion",
+    "difficulty": 0.75,
+    "difficulty_label": "hard",
+    "question_type": "reasoning",
+    "misconception_targeted": "Binary trees are the most efficient structure",
+    "reasoning_steps": ["Compute AVL height bound: 1.44 log₂(n)", "Compute B-Tree height bound: log_t(n)", "Compare results for n=1M, t=3", "Recognize B-Trees minimize disk seeks with high branching"],
+    "tree_type": "btree"
+  },
+  {
+    "id": "concept_001",
+    "question": "All balanced trees (AVL, RB, B-Tree) guarantee O(log n) for insert, delete, and search. Is there any reason to choose one over the other?",
+    "options": [
+      "No — the O(log n) bound means they are equivalent in practice",
+      "Yes: AVL is best for lookup-heavy workloads, RB for write-heavy workloads, B-Tree for disk-based storage",
+      "No — O(log n) is the same for any base, so performance is identical",
+      "Yes: RB trees are always the best choice"
+    ],
+    "correct_index": 1,
+    "explanation": "The hidden constants differ: AVL's stricter balance gives faster lookups but more rotations. RB's relaxed balance reduces write overhead. B-Tree's high branching factor minimizes disk I/O. The choice depends on workload and storage medium.",
+    "concept": "Balance Factor",
+    "difficulty": 0.8,
+    "difficulty_label": "hard",
+    "question_type": "reasoning",
+    "misconception_targeted": "All O(log n) trees have identical performance",
+    "reasoning_steps": ["Recognize that O(log n) hides different constants", "Connect deeper tree (RB) to fewer rotations but slower lookups", "Connect high branching factor (B-Tree) to disk efficiency", "Conclude: choose by workload characteristics"],
+    "tree_type": "avl"
+  },
+  {
+    "id": "concept_002",
+    "question": "A student says: 'Tree rotations change which keys are in the tree.' What concept is the student failing to understand?",
+    "options": [
+      "This statement is correct — rotations do change the set of keys",
+      "Rotations only restructure pointers; the in-order traversal and key set remain identical",
+      "Some rotations add keys, others remove them",
+      "Rotations only happen during deletion, not insertion"
+    ],
+    "correct_index": 1,
+    "explanation": "Rotations preserve BST ordering and the complete set of keys. They only change parent-child pointer relationships. The in-order traversal of both subtrees is identical before and after rotation. This is a fundamental invariant of all rotation-based trees.",
+    "concept": "AVL Rotations",
+    "difficulty": 0.55,
+    "difficulty_label": "medium",
+    "question_type": "misconception_targeted",
+    "misconception_targeted": "Rotations rearrange the keys in the tree",
+    "reasoning_steps": ["Understand that rotation is a pointer manipulation", "Verify in-order traversal before and after rotation", "Confirm key set remains unchanged", "Connect to BST invariant preservation"],
+    "tree_type": "avl"
+  },
+  {
+    "id": "concept_003",
+    "question": "Why is recursion a natural fit for tree operations?",
+    "options": [
+      "Trees are defined recursively: a tree is a root with zero or more subtrees",
+      "Recursion is faster than iteration for tree operations",
+      "All tree operations must be recursive — iterative approaches are impossible",
+      "Recursion is only used for tree traversal, not for insert/delete"
+    ],
+    "correct_index": 0,
+    "explanation": "The recursive definition of a tree directly mirrors recursive algorithms: if you can solve the problem for a node, and the subproblem for each child is the same problem on a smaller tree, recursion naturally follows. Iteration is possible but often requires explicit stacks.",
+    "concept": "AVL Rotations",
+    "difficulty": 0.5,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "Recursion is an implementation choice, not a structural match",
+    "reasoning_steps": ["Consider how a tree is defined: recursive structure", "Map recursive definition to recursive algorithm", "Compare with iterative approach (explicit stack)", "Understand why the structure guides the solution pattern"],
+    "tree_type": "avl"
+  },
+  {
+    "id": "bplus_001",
+    "question": "In a B+ Tree, where are all the actual data keys stored?",
+    "options": [
+      "Both internal nodes and leaf nodes store data keys",
+      "Only leaf nodes store data keys; internal nodes store routing keys",
+      "Only internal nodes store keys; leaves store pointers to records",
+      "Data keys are stored in a separate hash table"
+    ],
+    "correct_index": 1,
+    "explanation": "B+ Tree internal nodes only contain routing keys (copies) to guide searches. All actual data keys reside solely in leaf nodes. This is the fundamental difference from B-Trees, where every node stores actual keys.",
+    "concept": "B+ Tree Leaf vs Internal Structure",
+    "difficulty": 0.25,
+    "difficulty_label": "easy",
+    "question_type": "conceptual",
+    "misconception_targeted": "B+ Tree internal nodes store the same data as B-Tree internal nodes",
+    "reasoning_steps": ["Understand B+ Tree architecture", "Compare key storage: B-Tree vs B+ Tree", "Recognize that leaves are the only source of truth"],
+    "tree_type": "bplus_tree"
+  },
+  {
+    "id": "bplus_002",
+    "question": "What advantage does the leaf linked list provide in a B+ Tree?",
+    "options": [
+      "It allows internal nodes to bypass leaf nodes during search",
+      "It enables efficient range queries by traversing leaves sequentially without backtracking through internal nodes",
+      "It reduces the height of the tree by half",
+      "It eliminates the need for internal node splits"
+    ],
+    "correct_index": 1,
+    "explanation": "The leaf linked list connects adjacent leaf nodes. Once the start of a range is located via a search, the remaining keys in the range can be fetched by following the leaf pointers — no need to traverse up and down the tree. This makes range queries O(log n + k) instead of O(k log n).",
+    "concept": "Leaf Linked List Maintenance",
+    "difficulty": 0.45,
+    "difficulty_label": "medium_easy",
+    "question_type": "reasoning",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Understand leaf node linkage", "Compare range query with and without leaf links", "Recognize the sequential access pattern"],
+    "tree_type": "bplus_tree"
+  },
+  {
+    "id": "bplus_003",
+    "question": "During a B+ Tree leaf split, what happens to the median key?",
+    "options": [
+      "The median key is discarded",
+      "The median key stays in the left leaf node",
+      "The median key is copied up to the parent internal node",
+      "The median key is moved to a new leaf linked list"
+    ],
+    "correct_index": 2,
+    "explanation": "Unlike B-Tree where the median is promoted (removed from source), B+ Tree leaf splits COPY the median upward to the parent internal node. The median REMAINS in the right leaf node as well. This ensures all data keys stay in the leaves for complete range coverage.",
+    "concept": "Leaf Split (Median Copied)",
+    "difficulty": 0.5,
+    "difficulty_label": "medium",
+    "question_type": "trace",
+    "misconception_targeted": "Leaf splits in B+ Tree are identical to B-Tree splits",
+    "reasoning_steps": ["Identify overflow in leaf node", "Select median key", "Split keys into two leaves", "Copy median to parent (key stays in leaf)"],
+    "tree_type": "bplus_tree"
+  },
+  {
+    "id": "bplus_004",
+    "question": "When a B+ Tree internal node splits, what happens to the median key compared to a leaf split?",
+    "options": [
+      "Internal node split is identical to leaf split — median is copied up",
+      "Internal node split PROMOTES the median (removes it from the source node), unlike a leaf split which COPIES it up",
+      "Internal nodes never split in a B+ Tree — only leaves split",
+      "The median key is sent to the leaf level"
+    ],
+    "correct_index": 1,
+    "explanation": "The asymmetry is critical: leaf splits COPY the median upward (data stays in leaves), while internal node splits PROMOTE the median (removing it from the source). Internal nodes only contain routing keys, so the median is a pure separator — it doesn't need to stay in the source.",
+    "concept": "Internal Node Split (Median Promoted)",
+    "difficulty": 0.6,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "Internal node splits in B+ Tree remove the median key",
+    "reasoning_steps": ["Understand that internal nodes only route, leaves hold data", "Leaf split: keep data complete by copying median up", "Internal split: median is a pure separator, promote it out", "Recognize the asymmetry in split behavior"],
+    "tree_type": "bplus_tree"
+  },
+  {
+    "id": "bplus_005",
+    "question": "Trace the B+ Tree insertion of [10, 20, 30, 5] into an empty tree of order 3 (max 2 keys per node). What is the final structure?",
+    "options": [
+      "Root [20] with children [5,10] and [20,30]; leaves linked in order 5→10→20→30",
+      "Root [20] with children [10] and [30]; leaf 5 inserted into [10]",
+      "All keys in one root node [5,10,20,30]",
+      "Root [10,20] with children [5] and [30]; no leaf links"
+    ],
+    "correct_index": 0,
+    "explanation": "B+ Tree: Insert 10→[10]. 20→[10,20]. 30→leaf overflow, split: median 20 COPIED up. New root [20]. Leaves: [10], [20,30] linked. Insert 5→[5,10]. Final: root [20], internal [10]→[5,10] and [20,30] leaves, linked 5→10→20→30.",
+    "concept": "B+ Tree Insert Algorithm",
+    "difficulty": 0.65,
+    "difficulty_label": "medium",
+    "question_type": "visualization",
+    "misconception_targeted": "B+ Tree insertion follows the same algorithm as B-Tree insertion",
+    "reasoning_steps": ["Insert key into appropriate leaf node", "If leaf overflows, split and copy median to parent", "If parent overflows, split and promote median (removing it)", "Update leaf linked list pointers after each split"],
+    "tree_type": "bplus_tree"
+  },
+  {
+    "id": "bplus_006",
+    "question": "In a B+ Tree deletion, when a leaf node underflows, what is the first recovery strategy attempted?",
+    "options": [
+      "Immediately merge with a sibling leaf node",
+      "Try to borrow a key from a sibling leaf via the parent",
+      "Delete the entire leaf node and update the parent",
+      "Rebuild the tree from scratch"
+    ],
+    "correct_index": 1,
+    "explanation": "Borrowing (redistribution) is preferred over merging because it preserves the node count and only requires updating the parent's routing key. Merging is only attempted when neither sibling can spare a key. This minimizes structural changes.",
+    "concept": "B+ Tree Delete Algorithm",
+    "difficulty": 0.55,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "B+ Tree deletion never requires leaf linkage updates",
+    "reasoning_steps": ["Check if underflow occurred after deletion", "Attempt to borrow from left or right sibling first", "If borrowing possible, update parent routing key", "Only merge if both siblings are at minimum capacity"],
+    "tree_type": "bplus_tree"
+  },
+  {
+    "id": "bplus_007",
+    "question": "Why is a B+ Tree better suited than a B-Tree for database index range scans (e.g., 'SELECT * WHERE id BETWEEN 100 AND 200')?",
+    "options": [
+      "B+ Trees are always faster than B-Trees for any query type",
+      "Leaf linked lists eliminate the need to traverse internal nodes for every key in the range after the first key is found",
+      "B-Trees cannot support range queries at all",
+      "B+ Trees store data in sorted order naturally without any tree structure"
+    ],
+    "correct_index": 1,
+    "explanation": "Once the start of the range (100) is located via a O(log n) search, B+ Tree leaf links allow fetching remaining keys (101-200) by following sibling pointers — O(1) per subsequent key. In B-Tree, each key access requires a full root-to-leaf traversal: O(log n) per key.",
+    "concept": "B+ Tree Insert Algorithm",
+    "difficulty": 0.7,
+    "difficulty_label": "hard",
+    "question_type": "reasoning",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Understand B+ Tree leaf linkage", "Compare range query cost in B-Tree vs B+ Tree", "Connect to real-world database index implementation", "Recognize why B+ Tree is the standard for DB indexes"],
+    "tree_type": "bplus_tree"
+  },
+  {
+    "id": "bplus_008",
+    "question": "A student says: 'B+ Tree and B-Tree are essentially the same — the + just means an optimization.' Which key structural difference disproves this?",
+    "options": [
+      "B+ Tree internal nodes store no data pointers, only routing keys; all data is in linked leaves",
+      "The + indicates the tree uses more memory for caching",
+      "B-Tree cannot have more than 3 levels, B+ Tree can",
+      "B+ Tree requires 2× the order of B-Tree for the same performance"
+    ],
+    "correct_index": 0,
+    "explanation": "The structural difference is fundamental: B-Tree stores keys (and data pointers) in every node. B+ Tree stores ALL data in leaves (linked together), and internal nodes are pure routing structures. This changes insert, delete, search, and range query behavior entirely.",
+    "concept": "B+ Tree Leaf vs Internal Structure",
+    "difficulty": 0.55,
+    "difficulty_label": "medium",
+    "question_type": "misconception_targeted",
+    "misconception_targeted": "B-Tree and B+ Tree are nearly identical",
+    "reasoning_steps": ["Compare internal node content: data+keys (B) vs routing keys only (B+)", "Compare leaf structure: standalone (B) vs linked list (B+)", "Understand how these differences affect query performance", "Recognize B+ Tree is the industry standard for database indexes"],
+    "tree_type": "bplus_tree"
+  },
+  {
+    "id": "btree_006",
+    "question": "What guarantees that a B-Tree deletion can borrow a key from a sibling rather than merging?",
+    "options": [
+      "The sibling must have more than the minimum number of keys (at least t keys)",
+      "Any sibling can always provide a key regardless of its state",
+      "Borrowing is always preferred but never guaranteed — merge may be necessary",
+      "The parent always holds a spare key for borrowing"
+    ],
+    "correct_index": 0,
+    "explanation": "Borrowing requires the sibling to have at least t keys (one more than minimum). The parent key between the two nodes moves down to the underflowing node, and the sibling's closest key moves up to the parent. This avoids a costly merge and maintains the node count.",
+    "concept": "B-Tree Insertion",
+    "difficulty": 0.55,
+    "difficulty_label": "medium",
+    "question_type": "trace",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Detect underflow after deletion", "Check left sibling key count", "If left sibling has extra key, borrow from it via parent", "If not, check right sibling", "If neither can spare, merge with a sibling"],
+    "tree_type": "btree"
+  },
+  {
+    "id": "btree_007",
+    "question": "Trace the B-Tree deletion of 20 from root [20] with children [10,15] and [25,30] (order 3). What is the new tree?",
+    "options": [
+      "Root [15,25] with children [10] and [30]",
+      "Root [25] with children [10,15] and [30]",
+      "Root [10,15,25,30] — single node after merge",
+      "Deletion is impossible — 20 is the root separator"
+    ],
+    "correct_index": 0,
+    "explanation": "Deleting 20 from root: 20 is an internal separator. Find predecessor: 15 (from left child's max). Swap 20 with 15. Delete 15 from leaf [10,15]. Leaf now has [10] — underflow (t=3, min=2). Borrow 25 from sibling via parent: parent key 25 moves down to leaf, sibling's 30 stays. Parent now [15,25]. Tree restructured correctly.",
+    "concept": "B-Tree Insertion",
+    "difficulty": 0.75,
+    "difficulty_label": "hard",
+    "question_type": "visualization",
+    "misconception_targeted": "B-Tree deletion is straightforward with no complex cases",
+    "reasoning_steps": ["Find key in internal node", "Replace with predecessor or successor from leaf", "Remove the leaf key", "Check for underflow and fix via borrow or merge"],
+    "tree_type": "btree"
+  },
+  {
+    "id": "btree_008",
+    "question": "Why does increasing the order of a B-Tree reduce the tree height, but at some point offers diminishing returns?",
+    "options": [
+      "Height = log_t(n), so doubling t halves log height initially, but log grows very slowly for large t",
+      "Higher order always linearly reduces height — there is no diminishing return",
+      "Order only affects leaf capacity, not internal nodes",
+      "Height is independent of order — it depends only on insertion order"
+    ],
+    "correct_index": 0,
+    "explanation": "B-Tree height ≈ log_{t}(n) where t is minimum degree. Going from t=3 to t=6 roughly halves the height. But from t=100 to t=200, the height reduction is marginal because log_{100}(n) and log_{200}(n) are very close. The practical trade-off is that larger nodes use more memory per access.",
+    "concept": "B-Tree Insertion",
+    "difficulty": 0.7,
+    "difficulty_label": "hard",
+    "question_type": "reasoning",
+    "misconception_targeted": "Higher order is always better",
+    "reasoning_steps": ["Recall B-Tree height formula: log_t(n)", "Compute height for n=1M at t=3, t=6, t=100, t=200", "Observe diminishing differences as t increases", "Connect to trade-off: larger nodes = more data per disk page"],
+    "tree_type": "btree"
+  },
+  {
+    "id": "heap_007",
+    "question": "Given a max-heap [50, 30, 40, 10, 20, 35], insert 45 and show the resulting array:",
+    "options": [
+      "[50, 30, 45, 10, 20, 35, 40]",
+      "[50, 45, 40, 10, 20, 35, 30]",
+      "[50, 30, 40, 10, 20, 35, 45] unchanged",
+      "[45, 30, 50, 10, 20, 35, 40]"
+    ],
+    "correct_index": 0,
+    "explanation": "Append 45 → [50,30,40,10,20,35,45]. Sift-up: 45 at index 6, parent=40 at index 2, 45>40 → swap → [50,30,45,10,20,35,40]. 45 at index 2, parent=50 at index 0, 45<50 → stop. Final: [50,30,45,10,20,35,40].",
+    "concept": "Heap Property",
+    "difficulty": 0.5,
+    "difficulty_label": "medium",
+    "question_type": "visualization",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Append to end of array", "Compare with parent and swap if larger", "Repeat until parent is larger or root reached"],
+    "tree_type": "heap"
+  },
+  {
+    "id": "seg_006",
+    "question": "What is the minimum array size needed to build a segment tree for an array of n elements?",
+    "options": [
+      "n",
+      "2n",
+      "4n",
+      "n^2"
+    ],
+    "correct_index": 2,
+    "explanation": "Segment tree allocates 4n as a safe upper bound. The exact size is 2 * 2^{ceil(log2(n))} - 1, but 4n is simpler and covers the worst case when n is not a power of 2.",
+    "concept": "Segment Tree Structure",
+    "difficulty": 0.4,
+    "difficulty_label": "medium_easy",
+    "question_type": "reasoning",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Understand segment tree as a complete binary tree", "The height is ceil(log2(n)) + 1", "The size is 2^{height+1} - 1 ≈ 4n"],
+    "tree_type": "segment_tree"
+  },
+  {
+    "id": "cross_004",
+    "question": "If you need to support range sum queries with point updates, which data structure is most appropriate?",
+    "options": [
+      "AVL Tree — it maintains sorted order and supports range queries in O(log n)",
+      "Segment Tree — it stores precomputed aggregates for contiguous ranges, enabling O(log n) range queries and updates",
+      "B-Tree — its high branching factor makes range queries faster",
+      "Binary Heap — it can compute range sums using sift operations"
+    ],
+    "correct_index": 1,
+    "explanation": "Segment trees are designed for range queries on static arrays with point or range updates. They store aggregates (sum/min/max) for every contiguous range. AVL and B-Trees are ordered structures optimized for dynamic key lookups, not array range aggregation.",
+    "concept": "Segment Tree Structure",
+    "difficulty": 0.6,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "Any balanced tree can efficiently answer range sum queries",
+    "reasoning_steps": ["Identify the query type: range aggregate on array", "Understand segment tree stores precomputed segments", "Compare with BST: stores keys, not ranges", "Match structure to query requirements"],
+    "tree_type": "segment_tree"
+  },
+  {
+    "id": "cross_005",
+    "question": "A database uses a B+ Tree for indexing. Why are B-Trees rarely used for this purpose despite being structurally similar?",
+    "options": [
+      "B-Trees are slower for all operations compared to B+ Trees",
+      "B-Tree internal nodes store data pointers, reducing the branching factor and increasing tree height for the same page size",
+      "B-Trees cannot be stored on disk",
+      "B+ Trees require less memory because they don't store data in leaves"
+    ],
+    "correct_index": 1,
+    "explanation": "Database pages are fixed-size (e.g., 4KB). In a B-Tree, internal nodes store both keys AND data pointers, using more space per entry. In B+ Tree, internal nodes store ONLY routing keys, allowing more keys per page → higher branching factor → shorter tree → fewer disk seeks.",
+    "concept": "B+ Tree Leaf vs Internal Structure",
+    "difficulty": 0.75,
+    "difficulty_label": "hard",
+    "question_type": "reasoning",
+    "misconception_targeted": "",
+    "reasoning_steps": ["Understand fixed page size constraint", "Compare entry size in B-Tree vs B+ Tree internal nodes", "Compute branching factor for each given page size", "Connect branching factor to tree height and disk seeks"],
+    "tree_type": "bplus_tree"
+  },
+  {
+    "id": "cross_006",
+    "question": "Why does extracting the minimum from a min-heap take O(log n) while finding the minimum is O(1)?",
+    "options": [
+      "Finding the minimum follows a direct pointer (root), but extraction requires replacing the root with the last element and sifting down",
+      "Extraction and find have the same cost — both are O(1)",
+      "Finding the minimum requires scanning all leaves, which is O(n)",
+      "The heap must be re-sorted after extraction, which takes O(n log n)"
+    ],
+    "correct_index": 0,
+    "explanation": "The minimum is always at the root (O(1) to find). Extracting it requires moving the last element to the root and sifting down to restore the heap property — each sift step compares with both children and swaps with the smaller, taking O(log n) time in the worst case.",
+    "concept": "Heap Property",
+    "difficulty": 0.5,
+    "difficulty_label": "medium",
+    "question_type": "reasoning",
+    "misconception_targeted": "Extraction and find have the same complexity",
+    "reasoning_steps": ["Locate minimum: root, O(1)", "Remove root: O(1)", "Replace with last element: O(1)", "Restore heap property via sift-down: O(log n)"],
+    "tree_type": "heap"
+  },
+  {
+    "id": "cross_007",
+    "question": "A Red-Black Tree and an AVL Tree both contain 100,000 elements. Which tree would perform better for an insert-intensive workload?",
+    "options": [
+      "AVL Tree — stricter balance means faster inserts",
+      "Red-Black Tree — relaxed balance means fewer rotations per insert on average",
+      "Both have identical insert performance",
+      "Neither is suitable — B-Tree should be used for insert-intensive workloads"
+    ],
+    "correct_index": 1,
+    "explanation": "RB trees allow paths up to 2× the length of others, requiring only O(1) rotations per insert (amortized). AVL's stricter balance forces O(log n) rotations in the worst case per insert. For insert-heavy workloads, RB trees have lower write amplification.",
+    "concept": "Red-Black Tree Insertion",
+    "difficulty": 0.7,
+    "difficulty_label": "hard",
+    "question_type": "reasoning",
+    "misconception_targeted": "AVL trees are better in all scenarios because they are more balanced",
+    "reasoning_steps": ["Compare AVL vs RB rotation frequency per insert", "Understand O(log n) AVL rotations vs O(1) RB rotations amortized", "Connect rotation count to write performance", "Conclude: RB for write-heavy, AVL for read-heavy"],
+    "tree_type": "red_black"
+  }
+]

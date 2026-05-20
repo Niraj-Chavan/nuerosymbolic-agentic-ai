@@ -1,0 +1,10 @@
+#!/bin/sh
+'''exec' "/home/niraj/Projects /college projects /p3-20260507T035032Z-3-001 (3)/p3/ai_tree_tutor/backend/../../venv_linux/bin/python" "$0" "$@"
+' '''
+# -*- coding: utf-8 -*-
+import re
+import sys
+from dotenv.__main__ import cli
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(cli())

@@ -1,0 +1,208 @@
+version: "3.9"
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-restart: &restart-policy
+  restart: unless-stopped
+
+services:
+  # ────────────────────────────────────────── API Server
+  api:
+    <<: *restart-policy
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.prod
+    secrets:
+      - gemini_api_key
+      - database_url
+      - redis_url
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "1G"
+        reservations:
+          cpus: "0.5"
+          memory: "512M"
+    logging: *default-logging
+    volumes:
+      - operation_data:/app/data
+      - static_volume:/app/static
+
+  # ────────────────────────────────────────── Celery Worker
+  worker:
+    <<: *restart-policy
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: celery -A app.workers.celery_app worker --loglevel=warning --concurrency=2
+    env_file:
+      - .env.prod
+    secrets:
+      - gemini_api_key
+      - database_url
+      - redis_url
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.workers.celery_app inspect ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "1G"
+    logging: *default-logging
+
+  # ────────────────────────────────────────── Celery Beat (scheduler)
+  beat:
+    <<: *restart-policy
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: celery -A app.workers.celery_app beat --loglevel=warning
+    env_file:
+      - .env.prod
+    secrets:
+      - database_url
+      - redis_url
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.workers.celery_app inspect scheduled || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"
+    logging: *default-logging
+
+  # ────────────────────────────────────────── PostgreSQL
+  db:
+    image: postgres:16-alpine
+    <<: *restart-policy
+    secrets:
+      - postgres_password
+    environment:
+      POSTGRES_USER: tutor
+      POSTGRES_DB: ai_tree_tutor
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tutor -d ai_tree_tutor"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+        reservations:
+          cpus: "0.25"
+          memory: "256M"
+    logging: *default-logging
+    ports: []
+
+  # ────────────────────────────────────────── Redis
+  redis:
+    image: redis:7-alpine
+    <<: *restart-policy
+    command: redis-server --save "" --appendonly no --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"
+    logging: *default-logging
+    ports: []
+
+  # ────────────────────────────────────────── Nginx (reverse proxy)
+  nginx:
+    image: nginx:alpine
+    <<: *restart-policy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../frontend/dist:/usr/share/nginx/html:ro
+      - static_volume:/usr/share/nginx/static:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "128M"
+    logging: *default-logging
+
+# ────────────────────────────────────────── Secrets
+secrets:
+  gemini_api_key:
+    file: ./secrets/gemini_api_key.txt
+  database_url:
+    file: ./secrets/database_url.txt
+  redis_url:
+    file: ./secrets/redis_url.txt
+  postgres_password:
+    file: ./secrets/postgres_password.txt
+
+# ────────────────────────────────────────── Volumes
+volumes:
+  pgdata:
+    driver: local
+  redisdata:
+    driver: local
+  static_volume:
+    driver: local
+  operation_data:
+    driver: local
+  nginx_logs:
+    driver: local
