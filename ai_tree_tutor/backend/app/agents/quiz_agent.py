@@ -282,10 +282,29 @@ class QuizAgent(BaseAgent):
             question_type = q.get("question_type", "conceptual")
             difficulty = q.get("difficulty", 0.5)
 
+            # Map question bank concept string to actual ConceptTaxonomy ID
+            concept_mapping = {
+                "AVL Rotations": "avl_rotation_mechanics",
+                "B+ Tree Delete Algorithm": "bplus_delete",
+                "B+ Tree Insert Algorithm": "bplus_insert",
+                "B+ Tree Leaf vs Internal Structure": "bplus_structure",
+                "B-Tree Insertion": "btree_insert",
+                "Balance Factor": "avl_balance_factor",
+                "Heap Property": "heap_property",
+                "Heapify": "heapify",
+                "Internal Node Split (Median Promoted)": "bplus_internal_split",
+                "Leaf Linked List Maintenance": "bplus_leaf_linkage",
+                "Leaf Split (Median Copied)": "bplus_leaf_split",
+                "Red-Black Tree Insertion": "rb_insert_fixup",
+                "Red-Black Tree Properties": "rb_properties",
+                "Segment Tree Structure": "seg_range",
+            }
+            taxonomy_id = concept_mapping.get(concept, concept)
+
             if is_correct:
-                self.concept_graph.record_success(concept)
+                self.concept_graph.record_success(taxonomy_id)
             else:
-                self.concept_graph.record_mistake(concept)
+                self.concept_graph.record_mistake(taxonomy_id)
 
             concept_performance[concept].append(is_correct)
 

@@ -105,6 +105,8 @@ async def tutor_chat(
         if result and result.get("repaired") and req.concept_id:
             for _ in range(3):
                 concept_agent.record_success(req.concept_id)
+        if result and isinstance(result, dict) and req.concept_id:
+            result["new_mastery"] = concept_agent._get_mastery(req.concept_id).value
         return result
     except Exception as e:
         return {"response": f"Let's trace this step. What do you think happens to the tree's invariants when you run this operation? [Error: {str(e)}]"}
@@ -416,15 +418,29 @@ async def tutor_websocket(
                 reason = decision["reason"]
 
                 # Generate reply
-                reply = await meta_agent.generate_response(session_id, concept_id, content, history, strategy)
-                emotional_tracker.record_message(session_id, "tutor", reply)
+                reply_dict = await meta_agent.generate_response(session_id, concept_id, content, history, strategy)
+                response_text = reply_dict.get("response", "")
+                repaired = reply_dict.get("repaired", False)
+                widget = reply_dict.get("widget", None)
+
+                emotional_tracker.record_message(session_id, "tutor", response_text)
+
+                if repaired and concept_id:
+                    for _ in range(3):
+                        concept_agent.record_success(concept_id)
+
+                # Get the updated mastery
+                new_mastery = concept_agent._get_mastery(concept_id).value if concept_id else 0.5
 
                 await websocket.send_json({
                     "type": "tutor_message",
-                    "content": reply,
+                    "content": response_text,
                     "emotional_state": emotional_state,
                     "pedagogy_strategy": strategy,
-                    "pedagogy_reason": reason
+                    "pedagogy_reason": reason,
+                    "repaired": repaired,
+                    "new_mastery": new_mastery,
+                    "widget": widget
                 })
 
     except WebSocketDisconnect:

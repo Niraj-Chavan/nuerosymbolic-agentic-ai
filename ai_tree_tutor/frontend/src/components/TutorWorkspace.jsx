@@ -206,19 +206,24 @@ export default function TutorWorkspace() {
               <div className="weak-concepts-list">
                 {weakConcepts.map((concept) => {
                   const percentage = Math.round(concept.mastery * 100);
+                  const severity = concept.mastery < 0.35 ? 'error' : concept.mastery < 0.5 ? 'warning' : 'success';
+                  const isRemedying = activeConceptId === concept.id;
+                  const cardClassName = `weak-concept-card ${severity} ${isRemedying ? 'remedying' : ''}`;
+                  const badgeClassName = `violation-badge ${severity}`;
+
                   return (
-                    <div key={concept.id} className="weak-concept-card">
+                    <div key={concept.id} className={cardClassName}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
                           {concept.name}
                         </span>
-                        <span className="violation-badge error">
+                        <span className={badgeClassName}>
                           Mastery: {percentage}%
                         </span>
                       </div>
                       
                       {concept.false_belief && (
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic', borderLeft: '2px solid rgba(239, 68, 68, 0.3)', paddingLeft: 8 }}>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic', borderLeft: severity === 'error' ? '2px solid rgba(239, 68, 68, 0.3)' : severity === 'warning' ? '2px solid rgba(245, 158, 11, 0.3)' : '2px solid rgba(16, 185, 129, 0.3)', paddingLeft: 8 }}>
                           Common misconception: {concept.false_belief}
                         </p>
                       )}

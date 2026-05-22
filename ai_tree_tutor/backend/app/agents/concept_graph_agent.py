@@ -125,8 +125,7 @@ class ConceptGraphAgent(BaseAgent):
 
     def _get_mastery(self, concept_id: str) -> ConceptMastery:
         if concept_id not in self.mastery:
-            concept = self.taxonomy.get_concept(concept_id)
-            initial = 0.3 if (concept and concept.difficulty > 0.5) else 0.5
+            initial = 0.0
             self.mastery[concept_id] = ConceptMastery(value=initial)
         return self.mastery[concept_id]
 
@@ -340,27 +339,8 @@ class ConceptGraphAgent(BaseAgent):
     async def process(self, ctx: AgentContext) -> AgentContext:
         ctx.concept_updates = []
 
-        if ctx.has_violations:
-            for v in ctx.violations:
-                concepts = self._violation_to_concepts(v)
-                for cid in concepts:
-                    vtype = v.get("type", v.get("rule_id", "unknown"))
-                    self.record_mistake(cid, vtype)
-                    ctx.concept_updates.append({
-                        "concept": cid,
-                        "action": "mistake",
-                        "mastery": self._get_mastery(cid).value,
-                    })
-        else:
-            tree_concepts = self.taxonomy.get_concepts_for_tree(ctx.tree_type)
-            for c in tree_concepts:
-                if c.category.value in ("core", "operation"):
-                    self.record_success(c.id)
-                    ctx.concept_updates.append({
-                        "concept": c.id,
-                        "action": "success",
-                        "mastery": self._get_mastery(c.id).value,
-                    })
+        # We no longer record success or mistakes based on tree operations.
+        # Concept mastery is now strictly driven by Quiz and Tutor performance.
 
         ctx.metadata["recommendations"] = [
             {
@@ -397,6 +377,8 @@ class ConceptGraphAgent(BaseAgent):
         for concept in self.taxonomy.get_all_concepts():
             concept_id = concept.id
             m = self._get_mastery(concept_id)
+            if m.attempts == 0:
+                continue
             if m.value >= threshold:
                 continue
             node_data = self.graph.nodes.get(concept_id, {})

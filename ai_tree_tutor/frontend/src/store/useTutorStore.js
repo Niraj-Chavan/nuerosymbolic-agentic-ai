@@ -9,6 +9,7 @@ import {
   getEmotionalAnalytics,
   analyzeDiagram,
 } from '../api/api';
+import useConceptStore from './useConceptStore';
 
 const useTutorStore = create((set, get) => ({
   weakConcepts: [],
@@ -79,6 +80,7 @@ const useTutorStore = create((set, get) => ({
             content: data.content,
             strategy: data.pedagogy_strategy,
             reason: data.pedagogy_reason,
+            widget: data.widget,
           };
           set((state) => ({
             chatHistory: [...state.chatHistory, tutorMsg],
@@ -87,6 +89,19 @@ const useTutorStore = create((set, get) => ({
             pedagogyReason: data.pedagogy_reason || '',
             loadingChat: false,
           }));
+
+          if (data.repaired) {
+            set({
+              answered: true,
+              isCorrectAnswer: true,
+              newMastery: data.new_mastery || 1.0,
+              feedback: "Excellent work! You've successfully repaired your misconception on this concept! Your mastery has been updated to 100%."
+            });
+            get().fetchWeakConcepts();
+            useConceptStore.getState().fetchGraph();
+            useConceptStore.getState().fetchProgress();
+            useConceptStore.getState().fetchWeakConcepts();
+          }
         } else if (data.type === 'tutor_hint') {
           const hintMsg = {
             role: 'tutor',
@@ -255,9 +270,16 @@ const useTutorStore = create((set, get) => ({
         loadingChat: false,
         answered: res.repaired ? true : state.answered,
         isCorrectAnswer: res.repaired ? true : state.isCorrectAnswer,
-        newMastery: res.repaired ? 1.0 : state.newMastery,
-        feedback: res.repaired ? "Excellent work! You've demonstrated a solid understanding of this concept." : state.feedback
+        newMastery: res.repaired ? (res.new_mastery || 1.0) : state.newMastery,
+        feedback: res.repaired ? "Excellent work! You've successfully repaired your misconception on this concept! Your mastery has been updated to 100%." : state.feedback
       }));
+
+      if (res.repaired) {
+        get().fetchWeakConcepts();
+        useConceptStore.getState().fetchGraph();
+        useConceptStore.getState().fetchProgress();
+        useConceptStore.getState().fetchWeakConcepts();
+      }
     } catch (err) {
       const errorMsg = { role: 'tutor', content: "Let's think: what do you think is the main purpose of this tree's properties?" };
       set((state) => ({

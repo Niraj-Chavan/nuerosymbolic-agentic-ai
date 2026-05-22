@@ -88,9 +88,10 @@ class MetaCognitiveAgent:
         student_message: str,
         history: List[Dict[str, str]],
         strategy: str
-    ) -> str:
+    ) -> Dict[str, Any]:
         """
         Generates Socratic tutoring responses leveraging the chosen pedagogical strategy.
+        Returns a dictionary containing 'response', 'repaired', and 'widget'.
         """
         concept_data = self.concept_agent.get_concept_data(concept_id)
         concept_name = concept_data["name"] if concept_data else concept_id
@@ -111,10 +112,10 @@ class MetaCognitiveAgent:
         1. NEVER give the direct answer or write complete code blocks.
         2. If strategy is ANALOGY_BASED, start with a rich, simple real-world analogy.
         3. If strategy is EXAMPLE_DRIVEN, work through a small concrete numbers list trace.
-        4. If strategy is VISUAL_DEMONSTRATION, describe in ASCII art or text the tree visual nodes before and after.
+        4. If strategy is VISUAL_DEMONSTRATION, generate a beautiful HTML/SVG widget or description explaining the tree structure nodes and relations visually.
         5. If strategy is SOCRATIC_QUESTIONING, ask guidance questions to prompt them.
         6. Keep replies brief: 3-4 sentences max.
-        7. Always end with a Socratic guiding question.
+        7. Always end with a Socratic guiding question unless the concept has been successfully repaired.
         
         CONTEXT:
         Target Concept: {concept_name} (ID: {concept_id})
@@ -124,21 +125,62 @@ class MetaCognitiveAgent:
         {history_str}
         Student message: "{student_message}"
         
-        TUTOR RESPONSE:"""
+        Provide the response in EXACT JSON format with the following keys:
+        {{
+          "response": "Your Socratic conversational response here.",
+          "repaired": boolean, // Set to true ONLY IF the student has explicitly demonstrated full mastery, corrected their misconception, and understanding of the concept in their message. Otherwise false.
+          "widget": {{
+             "type": "html",
+             "content": "A self-contained HTML block (with SVG or styled elements) if strategy is VISUAL_DEMONSTRATION or if a visual would help clarify the concept. Otherwise null."
+          }} or null
+        }}
+        
+        CONSTRAINTS:
+        - Return ONLY valid JSON.
+        - Do NOT wrap in markdown code fences like ```json.
+        """
 
         if self.llm.available:
             try:
-                response = self.llm._model.generate_content(prompt)
-                return response.text.strip()
+                result = self.llm._query(prompt)
+                if isinstance(result, dict) and "response" in result:
+                    # Enforce default fields
+                    if "repaired" not in result:
+                        result["repaired"] = False
+                    if "widget" not in result:
+                        result["widget"] = None
+                    return result
+                
+                if isinstance(result, str):
+                    text = result.strip()
+                    if "```json" in text:
+                        text = text.split("```json")[1].split("```")[0].strip()
+                    elif "```" in text:
+                        text = text.split("```")[1].split("```")[0].strip()
+                    try:
+                        parsed = json.loads(text)
+                        if isinstance(parsed, dict) and "response" in parsed:
+                            return {
+                                "response": parsed["response"],
+                                "repaired": parsed.get("repaired", False),
+                                "widget": parsed.get("widget", None)
+                            }
+                    except Exception:
+                        pass
             except Exception as e:
                 logger.warning("MetaCognitiveAgent LLM generation failed: %s", e)
 
         # Fallback responses
+        fallback_msg = "What property do you think is currently violated in this tree structure? Let's check the rules."
         if strategy == "analogy_based":
-            return f"Think of {concept_name} like organizing books in a bookshelf. What happens if one shelf gets too heavy and falls over?"
+            fallback_msg = f"Think of {concept_name} like organizing books in a bookshelf. What happens if one shelf gets too heavy and falls over?"
         elif strategy == "example_driven":
-            return f"Let's trace: if we insert keys [10, 20] and then insert 30, which element is the root of the tree and which side does it incline to?"
+            fallback_msg = f"Let's trace: if we insert keys [10, 20] and then insert 30, which element is the root of the tree and which side does it incline to?"
         elif strategy == "visual_demonstration":
-            return f"Picture the root node. Left child is balance factor -1, right child is +1. Where does the height imbalance point?"
-        else:
-            return "What property do you think is currently violated in this tree structure? Let's check the rules."
+            fallback_msg = f"Picture the root node. Left child is balance factor -1, right child is +1. Where does the height imbalance point?"
+
+        return {
+            "response": fallback_msg,
+            "repaired": False,
+            "widget": None
+        }

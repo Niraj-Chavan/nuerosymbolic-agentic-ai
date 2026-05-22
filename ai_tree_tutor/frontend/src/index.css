@@ -686,6 +686,11 @@ body::before {
   color: var(--accent-success);
 }
 
+.violation-badge.warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-warning);
+}
+
 /* ============================================================ Dashboard */
 .progress-grid {
   display: grid;
@@ -1004,9 +1009,25 @@ select option {
 }
 
 .weak-concept-card:hover {
-  border-color: rgba(239, 68, 68, 0.25);
-  background: rgba(239, 68, 68, 0.02);
   transform: translateY(-2px);
+}
+
+.weak-concept-card.error:hover {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.03);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.08);
+}
+
+.weak-concept-card.warning:hover {
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.03);
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.08);
+}
+
+.weak-concept-card.success:hover {
+  border-color: rgba(16, 185, 129, 0.35);
+  background: rgba(16, 185, 129, 0.03);
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);
 }
 
 .weak-concept-card.remedying {
