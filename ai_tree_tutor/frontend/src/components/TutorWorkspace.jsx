@@ -102,16 +102,16 @@ export default function TutorWorkspace() {
 
   return (
     <div className="tutor-grid fade-in">
-      {/* LEFT PANEL: Socratic Chat Room */}
+      {/* LEFT PANEL: Doubts Chat Room */}
       <div className="tutor-chat-panel glass-card">
-        <h2>💬 Socratic Tutor</h2>
+        <h2>💬 Doubts Chatbot</h2>
         
         <div className="tutor-chat-messages">
           {chatHistory.length === 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%', alignItems: 'center', color: 'var(--text-muted)', textAlign: 'center', padding: 16 }}>
               <span style={{ fontSize: '2.5rem', marginBottom: 12 }}>🎓</span>
               <p style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
-                I am your Socratic AI Tutor.
+                I am your Doubts AI Tutor.
               </p>
               <p style={{ fontSize: '0.85rem', marginTop: 4, maxWidth: 300 }}>
                 Ask me any questions about AVL Trees, Red-Black Trees, Binary Heaps, Segment Trees, or B-Trees! I will guide you to find the answers yourself.
@@ -121,7 +121,7 @@ export default function TutorWorkspace() {
             chatHistory.map((msg, idx) => (
               <div key={idx} className="tutor-chat-bubble-container">
                 <div className={`tutor-avatar ${msg.role}`}>
-                  {msg.role === 'tutor' ? '🎓 Socratic Tutor' : '👤 Student'}
+                  {msg.role === 'tutor' ? '🎓 Doubts Chatbot' : '👤 Student'}
                 </div>
                 <div className={`tutor-chat-bubble ${msg.role}`}>
                   {msg.content}
@@ -132,7 +132,7 @@ export default function TutorWorkspace() {
           
           {loadingChat && (
             <div className="tutor-chat-bubble-container">
-              <div className="tutor-avatar tutor">🎓 Socratic Tutor</div>
+              <div className="tutor-avatar tutor">🎓 Doubts Chatbot</div>
               <div className="tutor-chat-bubble tutor" style={{ display: 'flex', padding: '10px 14px' }}>
                 <div className="typing-indicator">
                   <div className="typing-dot"></div>
@@ -378,7 +378,7 @@ export default function TutorWorkspace() {
             {!chatHistory[chatHistory.length - 1]?.widget && (
               <div className="remedy-theory-card fade-in" style={{ textAlign: 'center', padding: '32px 20px', background: 'var(--bg-glass)', border: '1px dashed var(--border-glass)', borderRadius: 'var(--radius-md)' }}>
                 <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: 12 }}>💬</span>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 650, margin: '0 0 8px 0' }}>Socratic Discussion Active</h3>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 650, margin: '0 0 8px 0' }}>Doubts Discussion Active</h3>
                 <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', maxWidth: 350, margin: '0 auto', lineHeight: '1.5' }}>
                   Use the tutor chat panel on the left to discuss and explain. The AI will guide you and automatically verify when the concept is repaired!
                 </p>

@@ -210,16 +210,19 @@ class GeminiEngine(LLMInterface):
             return result
         except json.JSONDecodeError:
             logger.warning("Gemini returned non-JSON: %s", getattr(response, "text", "")[:200])
+            # Fall back to returning the raw text as the response if it's not JSON
             return {
-                "error": "Failed to parse JSON response",
-                "raw_snippet": getattr(response, "text", "")[:300],
+                "response": getattr(response, "text", "").strip(),
+                "repaired": False,
+                "widget": None,
                 "fallback": True,
             }
         except Exception as e:
             logger.warning("Gemini query failed: %s", e)
             return {
-                "error": str(e),
-                "raw_response": getattr(response, "text", ""),
+                "response": f"I encountered an error: {str(e)}",
+                "repaired": False,
+                "widget": None,
                 "fallback": True,
             }
 

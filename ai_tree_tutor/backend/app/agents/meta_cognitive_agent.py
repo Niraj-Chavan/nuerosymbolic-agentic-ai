@@ -102,20 +102,18 @@ class MetaCognitiveAgent:
             role = "Student" if h.get("role") == "user" else "Tutor"
             history_str += f"{role}: {h.get('content')}\n"
 
-        prompt = f"""You are a Socratic Data Structures Tutor specializing in tree structures.
-        Respond to the student's question/message.
+        prompt = f"""You are an Expert Data Structures AI Assistant specializing in tree structures.
+        Respond to the student's question/message directly and helpfully.
         
         CURRENT Pedagogy Strategy: {strategy.upper()}
-        (Options: SOCRATIC_QUESTIONING, ANALOGY_BASED, EXAMPLE_DRIVEN, VISUAL_DEMONSTRATION)
+        (Even if the strategy suggests questioning, your primary goal is to answer their questions directly)
         
         GROUNDING RULES:
-        1. NEVER give the direct answer or write complete code blocks.
+        1. Answer the student's questions directly, clearly, and completely. Do not withhold answers.
         2. If strategy is ANALOGY_BASED, start with a rich, simple real-world analogy.
         3. If strategy is EXAMPLE_DRIVEN, work through a small concrete numbers list trace.
         4. If strategy is VISUAL_DEMONSTRATION, generate a beautiful HTML/SVG widget or description explaining the tree structure nodes and relations visually.
-        5. If strategy is SOCRATIC_QUESTIONING, ask guidance questions to prompt them.
-        6. Keep replies brief: 3-4 sentences max.
-        7. Always end with a Socratic guiding question unless the concept has been successfully repaired.
+        5. Be as helpful and informative as a standard AI assistant. You do not need to end with a question.
         
         CONTEXT:
         Target Concept: {concept_name} (ID: {concept_id})
@@ -128,16 +126,15 @@ class MetaCognitiveAgent:
         Provide the response in EXACT JSON format with the following keys:
         {{
           "response": "Your Socratic conversational response here.",
-          "repaired": boolean, // Set to true ONLY IF the student has explicitly demonstrated full mastery, corrected their misconception, and understanding of the concept in their message. Otherwise false.
-          "widget": {{
-             "type": "html",
-             "content": "A self-contained HTML block (with SVG or styled elements) if strategy is VISUAL_DEMONSTRATION or if a visual would help clarify the concept. Otherwise null."
-          }} or null
+          "repaired": false,
+          "widget": null
         }}
         
         CONSTRAINTS:
         - Return ONLY valid JSON.
         - Do NOT wrap in markdown code fences like ```json.
+        - "repaired" should be true ONLY IF the student has explicitly demonstrated full mastery, corrected their misconception, and understanding of the concept in their message. Otherwise false.
+        - "widget" should be a dictionary with "type": "html" and "content" as a valid HTML block (with SVG or styled elements) if strategy is VISUAL_DEMONSTRATION or if a visual would help clarify the concept. Otherwise null.
         """
 
         if self.llm.available:
@@ -166,7 +163,12 @@ class MetaCognitiveAgent:
                                 "widget": parsed.get("widget", None)
                             }
                     except Exception:
-                        pass
+                        # Fall back to raw text if it's not valid JSON
+                        return {
+                            "response": text,
+                            "repaired": False,
+                            "widget": None
+                        }
             except Exception as e:
                 logger.warning("MetaCognitiveAgent LLM generation failed: %s", e)
 

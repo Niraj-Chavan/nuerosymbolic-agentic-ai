@@ -64,7 +64,7 @@ class TeachingAgent(BaseAgent):
         return ctx
 
     # ------------------------------------------------------------------
-    # Socratic teaching with guided questioning
+    # Direct teaching
     # ------------------------------------------------------------------
 
     def _teach_one(
@@ -115,7 +115,7 @@ class TeachingAgent(BaseAgent):
         return fallback
 
     # ------------------------------------------------------------------
-    # Socratic question generator
+    # Guiding statements generator
     # ------------------------------------------------------------------
 
     def _socratic_question(
@@ -126,19 +126,16 @@ class TeachingAgent(BaseAgent):
     ) -> str:
         questions = {
             ScaffoldingLevel.MINIMAL: (
-                f"What property of {tree_type} does your approach violate?"
+                f"Make sure you understand how your approach impacts the properties of {tree_type}."
             ),
             ScaffoldingLevel.SOCRATIC: (
-                f"If your understanding were correct, what would happen to the "
-                f"{tree_type}'s invariants after this operation? Why is that a problem?"
+                f"Notice how the invariants of {tree_type} change after this operation."
             ),
             ScaffoldingLevel.DIRECTIVE: (
-                f"Consider the specific invariant related to '{misconception}'. "
-                f"How does your current approach fail to maintain it?"
+                f"Pay close attention to the specific invariant related to '{misconception}'."
             ),
             ScaffoldingLevel.EXPLANATORY: (
-                f"Trace through the operation step by step. At which step does "
-                f"the {tree_type} property break, and what should you do differently?"
+                f"Trace through the operation step by step to see where the {tree_type} property breaks."
             ),
         }
         return questions.get(scaffolding, questions[ScaffoldingLevel.SOCRATIC])
@@ -193,8 +190,8 @@ class TeachingAgent(BaseAgent):
                     f"The student responded to a teaching explanation about {misconception} "
                     f"on {tree_type} '{operation}' with: '{student_response}'. "
                     f"Previous explanations: {previous_materials[-1].get('explanation', '')[:200] if previous_materials else 'none'}.\n\n"
-                    f"Generate a Socratic follow-up that probes deeper into their understanding. "
-                    f"Do NOT give the answer — ask a question that makes them reason further."
+                    f"Generate a direct and simple explanation answering their follow-up doubt. "
+                    f"Always give the answer directly and explain the reasoning simply."
                 )
                 result = self.llm._query(prompt)
                 if result and "explanation" in result:

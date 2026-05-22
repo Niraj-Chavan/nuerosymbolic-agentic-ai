@@ -52,14 +52,14 @@ class AdaptiveTeachingAgent(BaseAgent):
 
     def socratic_dialogue(self, history_str: str, message: str, concept_id: str) -> Dict:
         """Guide discovery through Socratic questioning."""
-        prompt = f"""You are an Adaptive Socratic Data Structures Tutor.
-        Respond to the student's question or message.
+        prompt = f"""You are an Expert Data Structures AI Assistant.
+        Respond to the student's question or message directly and comprehensively.
         
         GROUNDING RULES:
-        1. NEVER give the direct answer or solution.
-        2. Guide the student step-by-step using questions.
-        3. Keep responses concise (3-4 sentences maximum).
-        4. Always end with a guiding question that encourages them to think.
+        1. Answer the student's questions directly, clearly, and completely.
+        2. Provide clear explanations, code examples (if helpful), and direct solutions when asked.
+        3. Be as helpful and informative as a standard AI assistant (like ChatGPT).
+        4. You do not need to ask guiding questions. Just answer the user's doubt.
         
         CONTEXT:
         Target Concept: {concept_id or "General Tree Structures"}
@@ -71,12 +71,13 @@ class AdaptiveTeachingAgent(BaseAgent):
         Provide your response in EXACT JSON format:
         {{
           "response": "Your Socratic conversational response here.",
-          "repaired": boolean, // Set to true ONLY IF the student has explicitly demonstrated full mastery and understanding of the concept in their message. Otherwise false.
+          "repaired": false,
           "widget": null
         }}
         
         CONSTRAINTS:
         - Return ONLY valid JSON, do not wrap in markdown code fences.
+        - "repaired" should be true ONLY IF the student has explicitly demonstrated full mastery and understanding of the concept in their message. Otherwise false.
         """
         if not self.llm.available:
             return {"response": "The Socratic API is currently unavailable.", "repaired": False, "widget": None}
@@ -103,7 +104,7 @@ class AdaptiveTeachingAgent(BaseAgent):
         Provide your response in EXACT JSON format:
         {{
           "response": "A concise, engaging response that introduces the visual diagram you generated.",
-          "repaired": boolean, // Set to true ONLY IF the student has explicitly demonstrated full mastery. Otherwise false.
+          "repaired": false,
           "widget": {{
              "type": "html",
              "content": "Provide self-contained, valid HTML containing an SVG diagram or styled div blocks illustrating the concept. Use vibrant colors, smooth styles, and modern design. Keep it compact."
@@ -112,6 +113,7 @@ class AdaptiveTeachingAgent(BaseAgent):
         
         CONSTRAINTS:
         - Return ONLY valid JSON, do not wrap in markdown code fences.
+        - "repaired" should be true ONLY IF the student has explicitly demonstrated full mastery. Otherwise false.
         - The widget content MUST be valid HTML. Do not use markdown inside the widget content.
         - Ensure SVG tags are properly closed.
         """
