@@ -136,4 +136,62 @@ export async function rangeQuery(left, right, sessionId = 'default') {
   return res.data;
 }
 
+/** Tutoring API calls */
+export async function tutorChat(message, history, conceptId, sessionId = 'default') {
+  const res = await api.post('/tutor/chat', {
+    message,
+    history,
+    concept_id: conceptId,
+    session_id: sessionId,
+  });
+  return res.data;
+}
+
+export async function startRemediation(conceptId, sessionId = 'default') {
+  const res = await api.post('/tutor/remedy/start', {
+    concept_id: conceptId,
+    session_id: sessionId,
+  });
+  return res.data;
+}
+
+export async function verifyRemediation(conceptId, isCorrect, sessionId = 'default') {
+  const res = await api.post('/tutor/remedy/verify', {
+    concept_id: conceptId,
+    is_correct: isCorrect,
+    session_id: sessionId,
+  });
+  return res.data;
+}
+
+export async function getWeakConceptsTutor() {
+  const res = await api.get('/tutor/weak-concepts');
+  return res.data;
+}
+
+export async function getLearningPath(sessionId = 'default') {
+  const res = await api.get('/tutor/learning-path', { params: { session_id: sessionId } });
+  return res.data;
+}
+
+export async function getExplainableAI(sessionId = 'default') {
+  const res = await api.get('/tutor/explainable-ai', { params: { session_id: sessionId } });
+  return res.data;
+}
+
+export async function getEmotionalAnalytics(sessionId = 'default') {
+  const res = await api.get('/tutor/emotional-analytics', { params: { session_id: sessionId } });
+  return res.data;
+}
+
+export async function analyzeDiagram(conceptId, imageData, sessionId = 'default') {
+  const res = await api.post('/tutor/analyze-diagram', {
+    concept_id: conceptId,
+    image_data: imageData,
+    session_id: sessionId,
+  });
+  return res.data;
+}
+
 export default api;
+

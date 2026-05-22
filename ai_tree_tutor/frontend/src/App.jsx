@@ -9,6 +9,7 @@ import { useOperation, useAnimation } from './hooks';
 import useTreeStore from './store/useTreeStore';
 import { rangeQuery } from './api/api.js';
 import useConceptStore from './store/useConceptStore';
+import TutorWorkspace from './components/TutorWorkspace.jsx';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('practice');
@@ -137,6 +138,14 @@ export default function App() {
           >
             📝 Quiz
           </button>
+          <button
+            id="tab-tutor"
+            className={`op-btn ${activeTab === 'tutor' ? 'insert' : ''}`}
+            onClick={() => setActiveTab('tutor')}
+            style={{ padding: '8px 18px', fontSize: '0.8rem' }}
+          >
+            🎓 AI Tutor
+          </button>
           {loading && (
             <span style={{ color: '#6366f1', fontSize: '0.85rem', fontWeight: 500 }}>
               ⟳ Processing...
@@ -145,68 +154,72 @@ export default function App() {
         </div>
       </header>
 
-      <main className="main-grid">
-        <ControlPanel
-          selectedTree={selectedTree}
-          onSelectTree={handleSelectTree}
-          keyValue={keyValue}
-          onKeyChange={setKeyValue}
-          onOperate={handleOperate}
-          onReset={handleReset}
-          loading={loading}
-          operationLog={operationLog}
-          treeOrder={treeOrder}
-          onOrderChange={setTreeOrder}
-          heapType={heapType}
-          onHeapTypeChange={setHeapType}
-          lastOperation={lastOperation}
-          lastOperationKey={lastOperationKey}
-          searchFound={searchFound}
-          rangeLow={rangeLow}
-          rangeHigh={rangeHigh}
-          rangeResult={rangeResult}
-          onRangeLowChange={setRangeLow}
-          onRangeHighChange={setRangeHigh}
-          onRangeQuery={handleRangeQuery}
-        />
-
-        <div className="visualization-stack">
-          <AnimationController
-            steps={steps}
-            currentStep={currentStep}
-            onStepChange={goToStep}
-            onTreeSnapshot={() => {}}
-            onHighlight={setHighlightedKeys}
-            isActive={isActive && showAnimation}
-            onClose={() => setShowAnimation(false)}
+      {activeTab === 'tutor' ? (
+        <TutorWorkspace />
+      ) : (
+        <main className="main-grid">
+          <ControlPanel
+            selectedTree={selectedTree}
+            onSelectTree={handleSelectTree}
+            keyValue={keyValue}
+            onKeyChange={setKeyValue}
+            onOperate={handleOperate}
+            onReset={handleReset}
+            loading={loading}
+            operationLog={operationLog}
+            treeOrder={treeOrder}
+            onOrderChange={setTreeOrder}
+            heapType={heapType}
+            onHeapTypeChange={setHeapType}
+            lastOperation={lastOperation}
+            lastOperationKey={lastOperationKey}
+            searchFound={searchFound}
+            rangeLow={rangeLow}
+            rangeHigh={rangeHigh}
+            rangeResult={rangeResult}
+            onRangeLowChange={setRangeLow}
+            onRangeHighChange={setRangeHigh}
+            onRangeQuery={handleRangeQuery}
           />
-          <TreeVisualizer
-            treeData={visualTreeData}
-            treeType={selectedTree}
-            violations={violations}
-            searchPath={searchPath}
-            animationSteps={steps}
-            currentStep={currentStep}
-            highlightedKeys={highlightedKeys}
-            operation={lastOperation}
-            operationKey={lastOperationKey}
-          />
-        </div>
 
-        <div className="right-panel">
-          {activeTab === 'practice' ? (
-            <ExplanationPanel
-              validation={validation}
-              diagnosis={diagnosis}
-              teaching={teaching}
-              complexity={complexity}
+          <div className="visualization-stack">
+            <AnimationController
+              steps={steps}
+              currentStep={currentStep}
+              onStepChange={goToStep}
+              onTreeSnapshot={() => {}}
+              onHighlight={setHighlightedKeys}
+              isActive={isActive && showAnimation}
+              onClose={() => setShowAnimation(false)}
             />
-          ) : (
-            <QuizPanel onConceptUpdate={handleConceptUpdate} />
-          )}
-          <Dashboard progress={progress} conceptData={conceptGraph} />
-        </div>
-      </main>
+            <TreeVisualizer
+              treeData={visualTreeData}
+              treeType={selectedTree}
+              violations={violations}
+              searchPath={searchPath}
+              animationSteps={steps}
+              currentStep={currentStep}
+              highlightedKeys={highlightedKeys}
+              operation={lastOperation}
+              operationKey={lastOperationKey}
+            />
+          </div>
+
+          <div className="right-panel">
+            {activeTab === 'practice' ? (
+              <ExplanationPanel
+                validation={validation}
+                diagnosis={diagnosis}
+                teaching={teaching}
+                complexity={complexity}
+              />
+            ) : (
+              <QuizPanel onConceptUpdate={handleConceptUpdate} />
+            )}
+            <Dashboard progress={progress} conceptData={conceptGraph} />
+          </div>
+        </main>
+      )}
     </div>
   );
 }

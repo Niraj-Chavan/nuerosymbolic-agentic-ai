@@ -18,7 +18,10 @@ from app.core.operation_pipeline import OperationPipeline
 from app.llm.base_llm import LLMInterface
 from app.llm.gemini_engine import GeminiEngine
 from app.llm.openai_engine import OpenAIEngine
-
+from app.agents.emotional_tracker import EmotionalStateTracker
+from app.agents.meta_cognitive_agent import MetaCognitiveAgent
+from app.agents.diagnostic_intelligence_agent import DiagnosticIntelligenceAgent
+from app.agents.curriculum_architect_agent import CurriculumArchitectAgent
 _llm: LLMInterface | None = None
 _tree_agent: TreeExecutionAgent | None = None
 _validation_agent: ValidationAgent | None = None
@@ -26,12 +29,17 @@ _diagnosis_agent: DiagnosisAgent | None = None
 _teaching_agent: TeachingAgent | None = None
 _concept_agent: ConceptGraphAgent | None = None
 _quiz_agent: QuizAgent | None = None
+_emotional_tracker: EmotionalStateTracker | None = None
+_meta_agent: MetaCognitiveAgent | None = None
+_diagnostic_agent: DiagnosticIntelligenceAgent | None = None
+_curriculum_agent: CurriculumArchitectAgent | None = None
 _session_memory: dict | None = None
 
 
 def init_services() -> None:
     global _llm, _tree_agent, _validation_agent
     global _diagnosis_agent, _teaching_agent, _concept_agent, _quiz_agent
+    global _emotional_tracker, _meta_agent, _diagnostic_agent, _curriculum_agent
     global _session_memory
 
     _llm = _create_llm()
@@ -41,12 +49,18 @@ def init_services() -> None:
     _diagnosis_agent = DiagnosisAgent(llm=_llm)
     _teaching_agent = TeachingAgent(llm=_llm)
     _quiz_agent = QuizAgent(llm=_llm, concept_graph=_concept_agent)
+    _emotional_tracker = EmotionalStateTracker(llm=_llm)
+    _meta_agent = MetaCognitiveAgent(llm=_llm, concept_agent=_concept_agent, emotional_tracker=_emotional_tracker)
+    _diagnostic_agent = DiagnosticIntelligenceAgent(llm=_llm, concept_agent=_concept_agent, emotional_tracker=_emotional_tracker)
+    _curriculum_agent = CurriculumArchitectAgent(llm=_llm, concept_agent=_concept_agent)
     _session_memory = {}
+
 
 
 def shutdown_services() -> None:
     global _llm, _tree_agent, _validation_agent
     global _diagnosis_agent, _teaching_agent, _concept_agent, _quiz_agent
+    global _emotional_tracker, _meta_agent, _diagnostic_agent, _curriculum_agent
     global _session_memory
     _llm = None
     _tree_agent = None
@@ -55,7 +69,12 @@ def shutdown_services() -> None:
     _teaching_agent = None
     _concept_agent = None
     _quiz_agent = None
+    _emotional_tracker = None
+    _meta_agent = None
+    _diagnostic_agent = None
+    _curriculum_agent = None
     _session_memory = None
+
 
 
 def _create_llm() -> LLMInterface:
@@ -136,6 +155,18 @@ def get_concept_agent() -> ConceptGraphAgent:
     return _concept_agent
 
 
+def get_diagnostic_agent() -> DiagnosticIntelligenceAgent:
+    if _diagnostic_agent is None:
+        raise RuntimeError("DiagnosticIntelligenceAgent not initialised.")
+    return _diagnostic_agent
+
+
+def get_curriculum_agent() -> CurriculumArchitectAgent:
+    if _curriculum_agent is None:
+        raise RuntimeError("CurriculumArchitectAgent not initialised.")
+    return _curriculum_agent
+
+
 def get_quiz_agent() -> QuizAgent:
     if _quiz_agent is None:
         raise RuntimeError("QuizAgent not initialised.")
@@ -162,6 +193,19 @@ def get_session_memory() -> dict:
     if _session_memory is None:
         raise RuntimeError("Session memory not initialised.")
     return _session_memory
+
+
+def get_emotional_tracker() -> EmotionalStateTracker:
+    if _emotional_tracker is None:
+        raise RuntimeError("EmotionalStateTracker not initialised.")
+    return _emotional_tracker
+
+
+def get_meta_agent() -> MetaCognitiveAgent:
+    if _meta_agent is None:
+        raise RuntimeError("MetaCognitiveAgent not initialised.")
+    return _meta_agent
+
 
 
 def get_pipeline() -> OperationPipeline:

@@ -394,14 +394,17 @@ class ConceptGraphAgent(BaseAgent):
 
     def get_weak_concepts(self, threshold: float = 0.4) -> List[Dict[str, Any]]:
         weak = []
-        for concept_id, m in list(self.mastery.items()):
+        for concept in self.taxonomy.get_all_concepts():
+            concept_id = concept.id
+            m = self._get_mastery(concept_id)
             if m.value >= threshold:
                 continue
-            concept = self.taxonomy.get_concept(concept_id)
             node_data = self.graph.nodes.get(concept_id, {})
             prereq_blocked = self._prerequisites_weak(concept_id, threshold)
 
             weak.append({
+                "id": concept_id,
+                "name": node_data.get("name", concept_id),
                 "concept": concept_id,
                 "concept_name": node_data.get("name", concept_id),
                 "mastery": round(m.value, 2),
@@ -414,6 +417,7 @@ class ConceptGraphAgent(BaseAgent):
                 "category": node_data.get("category", ""),
                 "prerequisites_weak": prereq_blocked,
                 "priority": self._compute_priority(m, node_data.get("is_hub", False), prereq_blocked),
+                "false_belief": concept.false_belief if concept else "",
             })
 
         return sorted(weak, key=lambda x: (x["priority"], x["mastery"]))
