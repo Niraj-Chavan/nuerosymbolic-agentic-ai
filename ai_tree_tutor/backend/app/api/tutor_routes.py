@@ -144,7 +144,8 @@ def get_concept_video_link(concept_id: str, concept_name: str) -> str:
     if concept_id in CONCEPT_VIDEOS:
         return CONCEPT_VIDEOS[concept_id]
     
-    query = f"Data structures {concept_name} tutorial".replace(" ", "+")
+    import urllib.parse
+    query = urllib.parse.quote_plus(f"Data structures {concept_name} tutorial")
     return f"https://www.youtube.com/results?search_query={query}"
 
 

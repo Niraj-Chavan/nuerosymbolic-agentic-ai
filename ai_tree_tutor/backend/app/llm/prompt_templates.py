@@ -95,10 +95,7 @@ CONSTRAINTS:
   - "why_happened" must explain the THINKING error, not the coding error
   - If uncertain about any specific claim, state it in "misconception" rather than guessing"""
 
-    # ------------------------------------------------------------------
-    # 2. Socratic teaching prompt
-    # ------------------------------------------------------------------
-
+    
     def teaching(
         self,
         tree_type: str,

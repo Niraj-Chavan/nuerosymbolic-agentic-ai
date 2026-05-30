@@ -77,6 +77,7 @@ class AdaptiveTeachingAgent(BaseAgent):
         
         CONSTRAINTS:
         - Return ONLY valid JSON, do not wrap in markdown code fences.
+        - CRITICAL: Ensure all strings properly escape double quotes (\") and newlines (\\n). DO NOT output raw unescaped newlines inside JSON string values.
         - "repaired" should be true ONLY IF the student has explicitly demonstrated full mastery and understanding of the concept in their message. Otherwise false.
         """
         if not self.llm.available:

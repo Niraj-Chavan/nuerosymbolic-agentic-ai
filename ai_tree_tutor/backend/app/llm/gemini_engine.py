@@ -200,7 +200,11 @@ class GeminiEngine(LLMInterface):
 
         response = None
         try:
-            response = self._model.generate_content(prompt)
+            import google.generativeai as genai
+            response = self._model.generate_content(
+                prompt,
+                generation_config=genai.GenerationConfig(response_mime_type="application/json")
+            )
             text = response.text.strip()
             if "```json" in text:
                 text = text.split("```json")[1].split("```")[0].strip()
