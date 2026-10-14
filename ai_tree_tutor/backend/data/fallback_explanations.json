@@ -1,0 +1,18 @@
+{
+  "avl:balance_factor_exceeded": {
+    "explanation": "The balance factor of a node in an AVL tree is the difference between the height of its left subtree and the height of its right subtree. This value must be -1, 0, or 1. When the balance factor falls outside this range, the tree has become unbalanced and must be rebalanced using rotations.",
+    "step_by_step": [
+      "Step 1: Identify the unbalanced node — WHY: The balance factor exceeds the allowed range of [-1, 0, 1]",
+      "Step 2: Determine the rotation case (LL, LR, RR, RL) — WHY: Each imbalance pattern requires a specific rotation sequence",
+      "Step 3: Perform the required rotation(s) — WHY: Rotations redistribute nodes to restore balance while preserving BST ordering",
+      "Step 4: Update heights of affected nodes — WHY: Heights must be recalculated after structural changes",
+      "Step 5: Verify the tree is now balanced — WHY: All nodes must have balance factors in the allowed range"
+    ],
+    "detailed_example": "Start with AVL tree containing [10, 5, 15]. Insert 3. After insertion, node 10 has left height 2 and right height 1, balance factor = 1 - 2 = -1? Wait — balance factor = left_height - right_height. After inserting 3: 10 has left subtree height 2 (5->3), right subtree height 1 (15), so balance factor = 2 - 1 = 1. That's fine. But insert 1 as well: 10's left height = 3 (5->3->1), right height = 1, balance factor = 2. This requires a right rotation on 10.",
+    "why_this_matters": "Without rebalancing, AVL trees would degrade to linked lists in worst case, giving O(n) instead of O(log n) search time.",
+    "guiding_question": "Why is the balance factor computed as the difference of subtree heights rather than just checking if the tree is 'roughly balanced'?",
+    "key_rule": "balance_factor = height(left_subtree) - height(right_subtree). |balance_factor| ≤ 1 for all nodes.",
+    "common_mistake": "Students often apply the wrong rotation type. Remember: LL case means the imbalance is in the left child's left subtree — this requires a right rotation on the parent.",
+    "visual_trace": "BEFORE: 10(root) -> 5(left) -> 3(left) [balance factor 2 at 10] | AFTER: 5(root) -> 3(left) -> 10(right) [balance factor 0 at 5]"
+  }
+}
