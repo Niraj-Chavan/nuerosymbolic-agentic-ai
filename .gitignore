@@ -1,0 +1,39 @@
+# Virtual environments
+venv/
+venv_linux/
+.venv/
+env/
+ENV/
+.venv*/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+dist/
+.next/
+
+# Data / models / DBs (regenerate or download locally)
+*.db
+*.sqlite3
+*.h5
+*.keras
+
+# Env & secrets
+.env
+.env.*
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
